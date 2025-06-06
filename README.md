@@ -301,16 +301,16 @@ $builder
             );
         }
     )
-    //
-    // > выполнить сразу после инициализации Eloquent
+    // //
+    // // > выполнить сразу после инициализации Eloquent
     // ->fnBoot(
     //     static function ($eloquent) {
     //         //
     //     }
     // )
-    //
-    // > включаем логирование запросов
-    // ->fnLogQuery(
+    // //
+    // // > включаем логирование запросов
+    // ->fnLog(
     //     static function ($query) use ($ffn) {
     //         $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 7);
     //         $trace = array_slice($trace, 6);
