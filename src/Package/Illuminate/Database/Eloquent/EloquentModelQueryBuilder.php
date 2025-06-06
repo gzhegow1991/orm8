@@ -14,7 +14,6 @@ use Gzhegow\Orm\Core\Query\ModelQuery\Traits\ColumnsTrait;
 use Gzhegow\Orm\Core\Query\ModelQuery\Traits\TransactionTrait;
 use Illuminate\Support\Collection as EloquentSupportCollection;
 use Gzhegow\Orm\Core\Query\ModelQuery\Traits\PersistenceTrait;
-use Illuminate\Database\Query\Builder as EloquentPdoQueryBuilderBase;
 use Illuminate\Database\Eloquent\Builder as EloquentQueryBuilderBase;
 use Gzhegow\Orm\Package\Illuminate\Database\EloquentPdoQueryBuilder;
 use Gzhegow\Orm\Exception\Exception\Resource\ResourceNotFoundException;
@@ -162,7 +161,7 @@ class EloquentModelQueryBuilder extends EloquentQueryBuilderBase
 
         $queryPdo->wheres = [];
         $queryPdo->where(
-            static function (EloquentPdoQueryBuilderBase $queryPdoWhere) use ($wheresCurrent) {
+            static function (EloquentPdoQueryBuilder $queryPdoWhere) use ($wheresCurrent) {
                 $queryPdoWhere->wheres = $wheresCurrent;
             }
         );
@@ -701,7 +700,7 @@ class EloquentModelQueryBuilder extends EloquentQueryBuilderBase
 
     protected function parseWithRelations_scopePrepareColumns(Relation $query, array $columnsUser = [])
     {
-        /** @var EloquentPdoQueryBuilderBase $pdoQuery */
+        /** @var EloquentPdoQueryBuilder $pdoQuery */
         /** @var EloquentModel $relatedModel */
 
         $columns = [];
