@@ -29,12 +29,12 @@
     },
 
     "require": {
-        "php": "^8.0",
+        "php": "~8.0.0|~8.1.0|^8.2",
 
         "ext-json": "*",
         "ext-pdo": "*",
 
-        "gzhegow/lib": "~1.1.0",
+        "gzhegow/lib": "~1.2.0",
 
         "illuminate/database": "~9.0|~10.0|~12.0"
     },

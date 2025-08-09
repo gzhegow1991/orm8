@@ -3,12 +3,12 @@
 namespace Gzhegow\Orm\Core\Query\Chunks;
 
 use Illuminate\Support\Collection as EloquentSupportCollection;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\EloquentModelCollection;
 
 
 /**
- * @template-covariant T of EloquentModel
+ * @template-covariant T of AbstractEloquentModel
  */
 interface EloquentChunksProcessorInterface
 {

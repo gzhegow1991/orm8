@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasOneOrMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Gzhegow\Orm\Package\Illuminate\Database\Capsule\Eloquent;
 use Illuminate\Database\Query\Builder as EloquentPdoQueryBuilderBase;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 use Illuminate\Database\Eloquent\Builder as EloquentModelQueryBuilderBase;
 
 
@@ -169,7 +169,7 @@ class EloquentPersistence implements EloquentPersistenceInterface
 
     public function persistBelongsToManyForSave(
         BelongsToMany $relation,
-        EloquentModel $model, array $pivotAttributes = [], ?bool $touch = null
+        AbstractEloquentModel $model, array $pivotAttributes = [], ?bool $touch = null
     ) : void
     {
         $touch = $touch ?? true;
@@ -222,7 +222,7 @@ class EloquentPersistence implements EloquentPersistenceInterface
 
     public function persistHasOneOrManyForSave(
         HasOneOrMany $relation,
-        EloquentModel $model
+        AbstractEloquentModel $model
     ) : void
     {
         $idx = count($this->queue);
@@ -253,7 +253,7 @@ class EloquentPersistence implements EloquentPersistenceInterface
     }
 
 
-    public function persistModelForSaveRecursive(EloquentModel $model) : void
+    public function persistModelForSaveRecursive(AbstractEloquentModel $model) : void
     {
         $idx = count($this->queue);
 
@@ -286,7 +286,7 @@ class EloquentPersistence implements EloquentPersistenceInterface
         $this->mapModelSaveRecursive[ $modelKey ] = $idx;
     }
 
-    public function persistModelForDeleteRecursive(EloquentModel $model) : void
+    public function persistModelForDeleteRecursive(AbstractEloquentModel $model) : void
     {
         $idx = count($this->queue);
 
@@ -311,7 +311,7 @@ class EloquentPersistence implements EloquentPersistenceInterface
     }
 
 
-    public function persistModelForSave(EloquentModel $model) : void
+    public function persistModelForSave(AbstractEloquentModel $model) : void
     {
         $idx = count($this->queue);
 
@@ -364,7 +364,7 @@ class EloquentPersistence implements EloquentPersistenceInterface
         endswitch;
     }
 
-    public function persistModelForDelete(EloquentModel $model) : void
+    public function persistModelForDelete(AbstractEloquentModel $model) : void
     {
         $idx = count($this->queue);
 

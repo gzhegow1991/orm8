@@ -7,14 +7,14 @@ use Gzhegow\Orm\Core\Orm;
 use Illuminate\Database\Eloquent\Model;
 use Gzhegow\Orm\Exception\LogicException;
 use Gzhegow\Orm\Exception\RuntimeException;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
 use Gzhegow\Orm\Package\Illuminate\Database\EloquentPdoQueryBuilder;
 use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\EloquentModelCollection;
 use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\EloquentModelQueryBuilder;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 
 
 /**
- * @mixin EloquentModel
+ * @mixin AbstractEloquentModel
  */
 trait FactoryTrait
 {
@@ -28,7 +28,9 @@ trait FactoryTrait
     {
         /** @see Model::newInstance() */
 
-        $attributes = Lib::php()->to_array($attributes);
+        $thePhp = Lib::php();
+
+        $attributes = $thePhp->to_array($attributes);
         $exists = boolval($exists ?? false);
 
         $instance = $this->newInstanceWithState(
@@ -47,6 +49,9 @@ trait FactoryTrait
      */
     public function newInstanceWithState(array $attributes = [], array $state = [])
     {
+        /**
+         * @noinspection PhpMethodParametersCountMismatchInspection
+         */
         $instance = new static($attributes);
 
         $state[ 'connection' ] = $state[ 'connection' ] ?? $this->getConnectionName();
@@ -67,8 +72,11 @@ trait FactoryTrait
     /**
      * @return static
      */
-    public function newInstanceWithSetState(array $attributes = [], ?\Closure $fnSetState = null)
+    public function newInstanceWithFnSetState(array $attributes = [], ?\Closure $fnSetState = null)
     {
+        /**
+         * @noinspection PhpMethodParametersCountMismatchInspection
+         */
         $instance = new static($attributes);
 
         if (null !== $fnSetState) {
@@ -101,7 +109,7 @@ trait FactoryTrait
     }
 
     /**
-     * @param class-string<EloquentModel> $modelClass
+     * @param class-string<AbstractEloquentModel> $modelClass
      *
      * @return static
      */
@@ -110,9 +118,9 @@ trait FactoryTrait
         array $attributes = [], array $state = []
     )
     {
-        if (! is_subclass_of($modelClass, EloquentModel::class)) {
+        if (! is_subclass_of($modelClass, AbstractEloquentModel::class)) {
             throw new LogicException(
-                [ 'The `class` should be class-string of: ' . EloquentModel::class, $modelClass ]
+                [ 'The `class` should be class-string of: ' . AbstractEloquentModel::class, $modelClass ]
             );
         }
 
@@ -132,18 +140,18 @@ trait FactoryTrait
     }
 
     /**
-     * @param class-string<EloquentModel> $modelClass
+     * @param class-string<AbstractEloquentModel> $modelClass
      *
      * @return static
      */
-    public function newModelWithSetState(
+    public function newModelWithFnSetState(
         string $modelClass,
         array $attributes = [], ?\Closure $fnSetState = null
     )
     {
-        if (! is_subclass_of($modelClass, EloquentModel::class)) {
+        if (! is_subclass_of($modelClass, AbstractEloquentModel::class)) {
             throw new LogicException(
-                [ 'The `class` should be class-string of: ' . EloquentModel::class, $modelClass ]
+                [ 'The `class` should be class-string of: ' . AbstractEloquentModel::class, $modelClass ]
             );
         }
 
@@ -167,7 +175,9 @@ trait FactoryTrait
     {
         /** @see Model::newFromBuilder() */
 
-        $_attributes = Lib::php()->to_array($attributes);
+        $thePhp = Lib::php();
+
+        $attributesArray = $thePhp->to_array($attributes);
 
         $instance = $this->newInstanceWithState(
             [],
@@ -178,9 +188,9 @@ trait FactoryTrait
                 //
                 // > sync()
                 'attributeCastCache' => [],
-                'attributes'         => $_attributes,
+                'attributes'         => $attributesArray,
                 'classCastCache'     => [],
-                'original'           => $_attributes,
+                'original'           => $attributesArray,
             ]
         );
 
@@ -191,7 +201,7 @@ trait FactoryTrait
 
 
     /**
-     * @return EloquentModelCollection<static>|static[]
+     * @return EloquentModelCollection<static>
      */
     public function newCollection(array $models = []) : EloquentModelCollection
     {

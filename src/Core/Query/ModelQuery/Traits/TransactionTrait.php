@@ -3,12 +3,12 @@
 namespace Gzhegow\Orm\Core\Query\ModelQuery\Traits;
 
 use Gzhegow\Orm\Exception\RuntimeException;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\EloquentModelQueryBuilder;
 
 
 /**
- * @template-covariant T of EloquentModel
+ * @template-covariant T of AbstractEloquentModel
  *
  * @mixin EloquentModelQueryBuilder
  */

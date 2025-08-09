@@ -4,13 +4,16 @@ namespace Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Relations;
 
 use Gzhegow\Orm\Core\Orm;
 use Gzhegow\Orm\Core\Relation\Traits\HasRelationNameTrait;
+use Gzhegow\Orm\Core\Relation\Interfaces\RelationInterface;
 use Gzhegow\Orm\Core\Persistence\EloquentPersistenceInterface;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
+use Gzhegow\Orm\Core\Relation\Interfaces\RelationManyInterface;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany as BelongsToManyBase;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 
 
 class BelongsToMany extends BelongsToManyBase implements
-    RelationInterface
+    RelationInterface,
+    RelationManyInterface
 {
     use HasRelationNameTrait;
 
@@ -115,7 +118,7 @@ class BelongsToMany extends BelongsToManyBase implements
     /**
      * @return static
      */
-    public function persistForSave(EloquentModel $model, array $pivotAttributes = [], $touch = null)
+    public function persistForSave(AbstractEloquentModel $model, array $pivotAttributes = [], $touch = null)
     {
         $persistence = $this->persistence();
 

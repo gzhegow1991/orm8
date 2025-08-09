@@ -3,21 +3,32 @@
 namespace Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Relations;
 
 use Gzhegow\Orm\Core\Orm;
-use Illuminate\Database\Eloquent\Relations\HasOne as HasOneBase;
 use Gzhegow\Orm\Core\Relation\Traits\HasRelationNameTrait;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
+use Gzhegow\Orm\Core\Relation\Interfaces\RelationInterface;
+use Gzhegow\Orm\Core\Persistence\EloquentPersistenceInterface;
+use Gzhegow\Orm\Core\Relation\Interfaces\RelationOneInterface;
+use Illuminate\Database\Eloquent\Relations\HasOne as HasOneBase;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 
 
 class HasOne extends HasOneBase implements
-    RelationInterface
+    RelationInterface,
+    RelationOneInterface
 {
     use HasRelationNameTrait;
 
 
+    public function persistence() : EloquentPersistenceInterface
+    {
+        $persistence = Orm::persistence();
+
+        return $persistence;
+    }
+
     /**
      * @return static
      */
-    public function persistForSave(EloquentModel $model)
+    public function persistForSave(AbstractEloquentModel $model)
     {
         $persistence = Orm::persistence();
 

@@ -20,21 +20,18 @@ trait RelationFactoryTrait
     }
 
     /**
+     * @noinspection PhpDocSignatureInspection
+     *
      * @param callable|array|null $relationFn
      *
      * @return string|callable
      */
-    public static function relationDot(
+    public static function fnCurryWith(
         ?array $relationFn = null,
         ?string $fields = null
     )
     {
-        $relationDot = Orm::relationDot(
-            $relationFn,
-            $fields
-        );
-
-        return $relationDot;
+        return Orm::fnCurryWith($relationFn, $fields);
     }
 
 

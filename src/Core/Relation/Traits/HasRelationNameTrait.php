@@ -2,9 +2,10 @@
 
 namespace Gzhegow\Orm\Core\Relation\Traits;
 
+use Gzhegow\Orm\Exception\LogicException;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Gzhegow\Orm\Package\Illuminate\Database\Capsule\Eloquent;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Relations\RelationInterface;
+use Gzhegow\Orm\Core\Relation\Interfaces\RelationInterface;
 
 
 /**
@@ -30,16 +31,16 @@ trait HasRelationNameTrait
     public function setRelationName(?string $relationName)
     {
         if ('' === $relationName) {
-            throw new \LogicException(
+            throw new LogicException(
                 [ 'The `relationName` should be non-empty string' ]
             );
         }
 
-        $relationPrefix = Eloquent::getRelationPrefix();;
+        $relationPrefix = Eloquent::getRelationPrefix();
 
         if ('' !== $relationPrefix) {
             if (0 !== strpos($relationName, $relationPrefix)) {
-                throw new \LogicException(
+                throw new LogicException(
                     [ 'The `relationName` should start with `relationPrefix`: ' . $relationName, $relationPrefix ]
                 );
             }

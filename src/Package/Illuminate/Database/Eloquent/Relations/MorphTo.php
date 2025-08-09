@@ -3,33 +3,38 @@
 namespace Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Relations;
 
 use Gzhegow\Orm\Core\Relation\Traits\HasRelationNameTrait;
+use Gzhegow\Orm\Core\Relation\Interfaces\RelationInterface;
+use Gzhegow\Orm\Core\Relation\Interfaces\RelationOneInterface;
 use Illuminate\Database\Eloquent\Relations\MorphTo as MorphToBase;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
+use Gzhegow\Orm\Core\Relation\Interfaces\RelationCanAssociateInterface;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 
 
+/**
+ * @template-covariant TModel of AbstractEloquentModel
+ */
 class MorphTo extends MorphToBase implements
-    RelationInterface
+    RelationInterface,
+    RelationOneInterface,
+    RelationCanAssociateInterface
 {
     use HasRelationNameTrait;
 
 
     /**
-     * @param EloquentModel $model
+     * @var TModel
+     */
+    protected $parent;
+
+
+    /**
+     * @param AbstractEloquentModel $model
      *
-     * @return EloquentModel
+     * @return TModel
      */
     public function associate($model)
     {
         /** @see parent::associate() */
-
-        $parent = $this->doAssociate($model);
-
-        return $parent;
-    }
-
-    private function doAssociate(?EloquentModel $model) : EloquentModel
-    {
-        /** @var EloquentModel $parent */
 
         $parent = $this->parent;
 
@@ -49,22 +54,12 @@ class MorphTo extends MorphToBase implements
         return $parent;
     }
 
-
     /**
-     * @return EloquentModel
+     * @return TModel
      */
     public function dissociate()
     {
         /** @see parent::dissociate() */
-
-        $parent = $this->doDissociate();
-
-        return $parent;
-    }
-
-    private function doDissociate() : EloquentModel
-    {
-        /** @var EloquentModel $parent */
 
         $parent = $this->parent;
 

@@ -177,15 +177,12 @@ php test.php
 ```php
 <?php
 
-require_once __DIR__ . '/../vendor/autoload.php';
-
-
 // > настраиваем PHP
 \Gzhegow\Lib\Lib::entrypoint()
     ->setDirRoot(__DIR__ . '/..')
-    //
     ->useAll()
 ;
+
 
 
 // > добавляем несколько функция для тестирования
@@ -198,23 +195,23 @@ $ffn = new class {
 
     function value_array($value, ?int $maxLevel = null, array $options = []) : string
     {
-        return \Gzhegow\Lib\Lib::debug()->value_array($value, $maxLevel, $options);
+        return \Gzhegow\Lib\Lib::debug()->dump_value_array($value, $maxLevel, $options);
     }
 
     function value_array_multiline($value, ?int $maxLevel = null, array $options = []) : string
     {
-        return \Gzhegow\Lib\Lib::debug()->value_array_multiline($value, $maxLevel, $options);
+        return \Gzhegow\Lib\Lib::debug()->dump_value_array_multiline($value, $maxLevel, $options);
     }
 
 
     function types($separator = null, ...$values) : string
     {
-        return \Gzhegow\Lib\Lib::debug()->types([], $separator, ...$values);
+        return \Gzhegow\Lib\Lib::debug()->dump_types([], $separator, ...$values);
     }
 
     function values($separator = null, ...$values) : string
     {
-        return \Gzhegow\Lib\Lib::debug()->values([], $separator, ...$values);
+        return \Gzhegow\Lib\Lib::debug()->dump_values([], $separator, ...$values);
     }
 
 
@@ -240,11 +237,11 @@ $ffn = new class {
     }
 
 
-    function test(\Closure $fn, array $args = []) : \Gzhegow\Lib\Modules\Test\Test
+    function test(\Closure $fn, array $args = []) : \Gzhegow\Lib\Modules\Test\TestCase
     {
         $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1);
 
-        return \Gzhegow\Lib\Lib::test()->newTest()
+        return \Gzhegow\Lib\Lib::test()->newTestCase()
             ->fn($fn, $args)
             ->trace($trace)
         ;
@@ -288,7 +285,7 @@ $builder
                         // > calculate $pdo->prepare() on PHP level instead of sending it to MySQL as is
                         \PDO::ATTR_EMULATE_PREPARES  => true,
                         //
-                        // > since (PHP_VERSION_ID > 80100) mysql integers return integer
+                        // > since (PHP_VERSION_ID > 80100) mysql `integer` returns integer
                         // > setting ATTR_STRINGIFY_FETCHES flag to TRUE forces returning numeric string
                         \PDO::ATTR_STRINGIFY_FETCHES => true,
                     ],
@@ -401,7 +398,8 @@ $schema->create(
             ->onUpdate('CASCADE')
             ->onDelete('CASCADE')
         ;
-    });
+    }
+);
 
 $schema->create(
     $tableDemoBaz,
@@ -705,17 +703,17 @@ $fn = function () use (
     $imageQuery = $image1::query()
         ->addColumns($image1->getMorphKeys('imageable'))
         ->with(
-            $post1::relationDot()([ $image1, '_imageable' ])()
+            $post1::fnCurryWith()([ $image1, '_imageable' ])()
         )
     ;
     $postQuery = $post1::query()
         ->with(
-            $post1::relationDot()([ $post1, '_demoImages' ])()
+            $post1::fnCurryWith()([ $post1, '_demoImages' ])()
         )
     ;
     $userQuery = $user1::query()
         ->with(
-            $user1::relationDot()([ $user1, '_demoImages' ])()
+            $user1::fnCurryWith()([ $user1, '_demoImages' ])()
         )
     ;
 
@@ -766,18 +764,18 @@ $fn = function () use (
 
     $tagQuery = $modelClassDemoTag::query()
         ->with([
-            $modelClassDemoTag::relationDot()([ $modelClassDemoTag, '_demoPosts' ])(),
-            $modelClassDemoTag::relationDot()([ $modelClassDemoTag, '_demoUsers' ])(),
+            $modelClassDemoTag::fnCurryWith()([ $modelClassDemoTag, '_demoPosts' ])(),
+            $modelClassDemoTag::fnCurryWith()([ $modelClassDemoTag, '_demoUsers' ])(),
         ])
     ;
     $postQuery = $post2::query()
         ->with(
-            $post2::relationDot()([ $post2, '_demoTags' ])()
+            $post2::fnCurryWith()([ $post2, '_demoTags' ])()
         )
     ;
     $userQuery = $user2::query()
         ->with(
-            $user2::relationDot()([ $user2, '_demoTags' ])()
+            $user2::fnCurryWith()([ $user2, '_demoTags' ])()
         )
     ;
 
@@ -1077,28 +1075,28 @@ $fn = function () use (
     echo PHP_EOL;
 
 
-    $foo_hasMany_bars_hasMany_bazs = \Gzhegow\Orm\Core\Orm::relationDot()
+    $foo_hasMany_bars_hasMany_bazs = \Gzhegow\Orm\Core\Orm::fnCurryWith()
     ([ \Gzhegow\Orm\Demo\Model\DemoFooModel::class, '_demoBars' ])
     ([ \Gzhegow\Orm\Demo\Model\DemoBarModel::class, '_demoBazs' ])
     ();
     $ffn->print($foo_hasMany_bars_hasMany_bazs);
 
-    $bar_belongsTo_foo = \Gzhegow\Orm\Demo\Model\DemoBarModel::relationDot()
+    $bar_belongsTo_foo = \Gzhegow\Orm\Demo\Model\DemoBarModel::fnCurryWith()
     ([ \Gzhegow\Orm\Demo\Model\DemoBarModel::class, '_demoFoo' ])
     ();
     $ffn->print($bar_belongsTo_foo);
 
-    $bar_hasMany_bazs = \Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel::relationDot()
+    $bar_hasMany_bazs = \Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel::fnCurryWith()
     ([ \Gzhegow\Orm\Demo\Model\DemoBarModel::class, '_demoBazs' ])
     ();
     $ffn->print($bar_hasMany_bazs);
 
-    $bar_belongsTo_foo_only_id = \Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel::relationDot()
+    $bar_belongsTo_foo_only_id = \Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel::fnCurryWith()
     ([ \Gzhegow\Orm\Demo\Model\DemoBarModel::class, '_demoFoo' ], 'id')
     ();
     $ffn->print($bar_belongsTo_foo_only_id);
 
-    $bar_hasMany_bazs_only_id = \Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel::relationDot()
+    $bar_hasMany_bazs_only_id = \Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel::fnCurryWith()
     ([ \Gzhegow\Orm\Demo\Model\DemoBarModel::class, '_demoBazs' ], 'id')
     ();
     $ffn->print($bar_hasMany_bazs_only_id);

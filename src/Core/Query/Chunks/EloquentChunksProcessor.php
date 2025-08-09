@@ -5,14 +5,14 @@ namespace Gzhegow\Orm\Core\Query\Chunks;
 use Gzhegow\Orm\Exception\LogicException;
 use Gzhegow\Orm\Exception\RuntimeException;
 use Illuminate\Support\Collection as EloquentSupportCollection;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 use Gzhegow\Orm\Package\Illuminate\Database\EloquentPdoQueryBuilder;
 use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\EloquentModelCollection;
 use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\EloquentModelQueryBuilder;
 
 
 /**
- * @template-covariant T of EloquentModel
+ * @template-covariant T of AbstractEloquentModel
  */
 class EloquentChunksProcessor implements EloquentChunksProcessorInterface
 {

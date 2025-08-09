@@ -3,11 +3,14 @@
 namespace Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Relations;
 
 use Gzhegow\Orm\Core\Relation\Traits\HasRelationNameTrait;
+use Gzhegow\Orm\Core\Relation\Interfaces\RelationInterface;
+use Gzhegow\Orm\Core\Relation\Interfaces\RelationOneInterface;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough as HasOneThroughBase;
 
 
 class HasOneThrough extends HasOneThroughBase implements
-    RelationInterface
+    RelationInterface,
+    RelationOneInterface
 {
     use HasRelationNameTrait;
 

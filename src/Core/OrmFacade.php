@@ -5,7 +5,7 @@ namespace Gzhegow\Orm\Core;
 use Gzhegow\Orm\Exception\LogicException;
 use Gzhegow\Orm\Core\Persistence\EloquentPersistenceInterface;
 use Gzhegow\Orm\Package\Illuminate\Database\Capsule\EloquentInterface;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 
 
 class OrmFacade implements OrmInterface
@@ -57,13 +57,15 @@ class OrmFacade implements OrmInterface
 
 
     /**
+     * @noinspection PhpDocSignatureInspection
+     *
      * @template T of (\Closure(array|null $relationFn, string|null $fields) : T|string)
      *
      * @param callable|array|null $relationFn
      *
      * @return T
      */
-    public function fnEloquentRelationDotnameCurry(?array $relationFn = null, ?string $fields = null)
+    public function fnCurryEloquentRelationWith(?array $relationFn = null, ?string $fields = null)
     {
         $fn = static function ($relationFn = null, ?string $fields = null) use (&$fn) {
             static $current;
@@ -74,7 +76,7 @@ class OrmFacade implements OrmInterface
             }
 
             if (true
-                && is_subclass_of($relationFn[ 0 ], EloquentModel::class)
+                && is_subclass_of($relationFn[ 0 ], AbstractEloquentModel::class)
                 && method_exists($relationFn[ 0 ], $relationFn[ 1 ])
             ) {
                 $current .= '.' . $relationFn[ 1 ];

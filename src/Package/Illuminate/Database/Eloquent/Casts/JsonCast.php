@@ -10,11 +10,11 @@ class JsonCast implements CastsAttributes
 {
     public function get($model, $key, $value, $attributes)
     {
-        return Lib::format()->json()->json_decode($value);
+        return Lib::formatJson()->json_decode([], $value);
     }
 
     public function set($model, $key, $value, $attributes)
     {
-        return Lib::format()->json()->json_encode($value);
+        return Lib::formatJson()->json_encode([], $value);
     }
 }

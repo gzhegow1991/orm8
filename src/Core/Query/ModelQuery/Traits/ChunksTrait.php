@@ -3,13 +3,13 @@
 namespace Gzhegow\Orm\Core\Query\ModelQuery\Traits;
 
 use Gzhegow\Orm\Core\Query\Chunks\EloquentChunksBuilder;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\EloquentModelCollection;
 use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\EloquentModelQueryBuilder;
 
 
 /**
- * @template-covariant T of EloquentModel
+ * @template-covariant T of AbstractEloquentModel
  *
  * @mixin EloquentModelQueryBuilder
  */
@@ -20,9 +20,7 @@ trait ChunksTrait
      */
     public function chunks() : EloquentChunksBuilder
     {
-        $builder = EloquentChunksBuilder::fromModelQuery($this);
-
-        return $builder;
+        return EloquentChunksBuilder::fromModelQuery($this)->orThrow();
     }
 
 
@@ -34,7 +32,7 @@ trait ChunksTrait
         ?int $offset = null
     ) : \Generator
     {
-        $builder = EloquentChunksBuilder::fromModelQuery($this);
+        $builder = EloquentChunksBuilder::fromModelQuery($this)->orThrow();
 
         $builder
             ->chunksModelNativeForeach(
@@ -56,7 +54,7 @@ trait ChunksTrait
         ?string $offsetColumn = null, ?string $offsetOperator = null, $offsetValue = null, ?bool $includeOffsetValue = null
     ) : \Generator
     {
-        $builder = EloquentChunksBuilder::fromModelQuery($this);
+        $builder = EloquentChunksBuilder::fromModelQuery($this)->orThrow();
 
         $builder
             ->chunksModelAfterForeach(
@@ -79,7 +77,7 @@ trait ChunksTrait
         ?int $offset = null
     ) : \Generator
     {
-        $builder = EloquentChunksBuilder::fromModelQuery($this);
+        $builder = EloquentChunksBuilder::fromModelQuery($this)->orThrow();
 
         $builder
             ->chunksPdoNativeForeach(
@@ -101,7 +99,7 @@ trait ChunksTrait
         ?string $offsetColumn = null, ?string $offsetOperator = null, $offsetValue = null, ?bool $includeOffsetValue = null
     ) : \Generator
     {
-        $builder = EloquentChunksBuilder::fromModelQuery($this);
+        $builder = EloquentChunksBuilder::fromModelQuery($this)->orThrow();
 
         $builder
             ->chunksPdoAfterForeach(
@@ -121,7 +119,7 @@ trait ChunksTrait
         ?int $offset = null
     ) : EloquentChunksBuilder
     {
-        $builder = EloquentChunksBuilder::fromModelQuery($this);
+        $builder = EloquentChunksBuilder::fromModelQuery($this)->orThrow();
 
         $builder
             ->paginateModelNativeForeach(
@@ -138,7 +136,7 @@ trait ChunksTrait
         ?string $offsetColumn = null, ?string $offsetOperator = null, $offsetValue = null, ?bool $includeOffsetValue = null
     ) : EloquentChunksBuilder
     {
-        $builder = EloquentChunksBuilder::fromModelQuery($this);
+        $builder = EloquentChunksBuilder::fromModelQuery($this)->orThrow();
 
         $builder
             ->paginateModelAfterForeach(
@@ -156,7 +154,7 @@ trait ChunksTrait
         ?int $offset = null
     ) : EloquentChunksBuilder
     {
-        $builder = EloquentChunksBuilder::fromModelQuery($this);
+        $builder = EloquentChunksBuilder::fromModelQuery($this)->orThrow();
 
         $builder
             ->paginatePdoNativeForeach(
@@ -173,7 +171,7 @@ trait ChunksTrait
         ?string $offsetColumn = null, ?string $offsetOperator = null, $offsetValue = null, ?bool $includeOffsetValue = null
     ) : EloquentChunksBuilder
     {
-        $builder = EloquentChunksBuilder::fromModelQuery($this);
+        $builder = EloquentChunksBuilder::fromModelQuery($this)->orThrow();
 
         $builder
             ->paginatePdoAfterForeach(

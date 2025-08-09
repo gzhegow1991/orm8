@@ -3,12 +3,12 @@
 namespace Gzhegow\Orm\Core\Model\Traits\Has;
 
 use Gzhegow\Lib\Lib;
-use Gzhegow\Orm\Exception\RuntimeException;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
+use Gzhegow\Lib\Modules\Type\Ret;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 
 
 /**
- * @mixin EloquentModel
+ * @mixin AbstractEloquentModel
  *
  * @property int|string $id
  */
@@ -23,34 +23,38 @@ trait HasIdTrait
 
         $id = $this->attributes[ 'id' ] ?? null;
 
-        $status = false
-            || $theType->int_positive($idValid, $id)
-            || $theType->string_not_empty($idValid, $id);
+        $ret = Ret::new();
 
-        if (! $status) {
-            throw new RuntimeException('The `id` is empty');
-        }
+        $idValid = null
+            ?? $theType->int_positive($id)->orNull($ret)
+            ?? $theType->string_not_empty($id)->orNull($ret);
+
+        $ret->orThrow();
 
         return $idValid;
     }
 
     /**
-     * @return null|int|string
+     * @param int|string $result
      */
-    public function hasId()
+    public function hasId(&$result = null) : bool
     {
+        $result = null;
+
         $theType = Lib::type();
 
         $id = $this->attributes[ 'id' ] ?? null;
 
-        $status = false
-            || $theType->int_positive($idValid, $id)
-            || $theType->string_not_empty($idValid, $id);
+        $idValid = null
+            ?? $theType->int_positive($id)->orNull()
+            ?? $theType->string_not_empty($id)->orNull();
 
-        if (! $status) {
-            return null;
+        if (null !== $idValid) {
+            $result = $idValid;
+
+            return true;
         }
 
-        return $idValid;
+        return false;
     }
 }

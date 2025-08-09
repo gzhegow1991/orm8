@@ -2,28 +2,28 @@
 
 namespace Gzhegow\Orm\Core\Relation\Spec;
 
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\EloquentModelQueryBuilder;
 
 
 /**
- * @property string                             $relationName
+ * @property string                                     $relationName
  *
- * @property EloquentModel                      $thisModel
- * @property EloquentModel                      $remoteModel
- * @property EloquentModelQueryBuilder          $remoteModelQuery
+ * @property AbstractEloquentModel                      $thisModel
+ * @property AbstractEloquentModel                      $remoteModel
+ * @property EloquentModelQueryBuilder                  $remoteModelQuery
  *
- * @property string|class-string<EloquentModel> $remoteModelClassOrTableName
+ * @property string|class-string<AbstractEloquentModel> $remoteModelClassOrTableName
  *
- * @property  string                            $morphTypeName
- * @property  string|null                       $morphTable
+ * @property  string                                    $morphTypeName
+ * @property  string|null                               $morphTable
  *
- * @property string|null                        $thisTableRightKey
- * @property string|null                        $pivotTableLeftKey
- * @property string|null                        $pivotTableRightKey
- * @property string|null                        $remoteTableLeftKey
+ * @property string|null                                $thisTableRightKey
+ * @property string|null                                $pivotTableLeftKey
+ * @property string|null                                $pivotTableRightKey
+ * @property string|null                                $remoteTableLeftKey
  *
- * @property bool                               $inverse
+ * @property bool                                       $inverse
  */
 class MorphToManySpec extends AbstractSpec
 {
@@ -33,11 +33,11 @@ class MorphToManySpec extends AbstractSpec
     protected $relationName = [];
 
     /**
-     * @var EloquentModel
+     * @var AbstractEloquentModel
      */
     protected $thisModel = [];
     /**
-     * @var EloquentModel
+     * @var AbstractEloquentModel
      */
     protected $remoteModel = [];
     /**
@@ -46,7 +46,7 @@ class MorphToManySpec extends AbstractSpec
     protected $remoteModelQuery = [];
 
     /**
-     * @var string|class-string<EloquentModel>
+     * @var string|class-string<AbstractEloquentModel>
      */
     protected $remoteModelClassOrTableName = [];
 

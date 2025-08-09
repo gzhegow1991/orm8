@@ -3,13 +3,12 @@
 namespace Gzhegow\Orm\Core\Model\Traits;
 
 use Gzhegow\Lib\Lib;
-use Gzhegow\Orm\Exception\RuntimeException;
 use Illuminate\Database\Eloquent\Concerns\HasAttributes;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 
 
 /**
- * @mixin EloquentModel
+ * @mixin AbstractEloquentModel
  */
 trait DateTrait
 {
@@ -25,6 +24,9 @@ trait DateTrait
     }
 
 
+    /**
+     * @return \DateTimeImmutable
+     */
     protected function asDateTime($value)
     {
         /** @see HasAttributes::asDateTime() */
@@ -33,6 +35,8 @@ trait DateTrait
             return null;
         }
 
+        $theType = Lib::type();
+
         $formats = [
             'Y-m-d H:i:s.u',
             'Y-m-d H:i:s.v',
@@ -40,36 +44,17 @@ trait DateTrait
             $this->getDateFormat(),
         ];
 
-        $status = Lib::type()->idate_formatted(
-            $dateTimeImmutable,
-            $value, $formats
-        );
+        $iDate = $theType->idate_formatted($value, $formats)->orThrow();
 
-        if (! $status) {
-            throw new RuntimeException(
-                [ 'Unable to parse date', $value ]
-            );
-        }
-
-        return $dateTimeImmutable;
+        return $iDate;
     }
 
+    /**
+     * @return \DateTimeImmutable
+     */
     protected function asDateTimeFormat($value, string $format)
     {
-        $formats = [ $format ];
-
-        $status = Lib::type()->idate_formatted(
-            $dateTimeImmutable,
-            $value, $formats
-        );
-
-        if (! $status) {
-            throw new RuntimeException(
-                [ 'Unable to parse date', $value ]
-            );
-        }
-
-        return $dateTimeImmutable;
+        return Lib::type()->idate_formatted($value, [ $format ])->orThrow();
     }
 
 

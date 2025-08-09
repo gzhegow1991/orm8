@@ -3,11 +3,11 @@
 namespace Gzhegow\Orm\Core\Model\Traits\Grammar;
 
 use Gzhegow\Orm\Core\Model\Scope\MariaDBGrammarScope;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 
 
 /**
- * @mixin EloquentModel
+ * @mixin AbstractEloquentModel
  */
 trait MariaDBGrammarTrait
 {

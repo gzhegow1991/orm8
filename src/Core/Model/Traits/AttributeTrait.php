@@ -2,6 +2,7 @@
 
 namespace Gzhegow\Orm\Core\Model\Traits;
 
+use Gzhegow\Lib\Lib;
 use Illuminate\Contracts\Support\Arrayable;
 use Gzhegow\Orm\Exception\RuntimeException;
 use Illuminate\Database\Eloquent\Concerns\HasAttributes;
@@ -9,11 +10,11 @@ use Gzhegow\Orm\Exception\Runtime\BadMethodCallException;
 use Illuminate\Database\Eloquent\Concerns\HidesAttributes;
 use Illuminate\Database\Eloquent\Concerns\GuardsAttributes;
 use Gzhegow\Orm\Package\Illuminate\Database\Capsule\Eloquent;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 
 
 /**
- * @mixin EloquentModel
+ * @mixin AbstractEloquentModel
  */
 trait AttributeTrait
 {
@@ -40,16 +41,11 @@ trait AttributeTrait
     {
         /** @see HasAttributes::getAttributeValue() */
 
-        $value = $this->doGetAttributeValue($key);
+        $keyValid = Lib::type()->string_not_empty($key)->orThrow();
 
-        return $value;
-    }
+        $value = $this->getAttributeFromArray($keyValid);
 
-    private function doGetAttributeValue(string $key)
-    {
-        $value = $this->getAttributeFromArray($key);
-
-        $value = $this->transformModelValue($key, $value);
+        $value = $this->transformModelValue($keyValid, $value);
 
         return $value;
     }
@@ -150,11 +146,11 @@ trait AttributeTrait
     public function isRelationAttribute(string $key) : bool
     {
         return false
-            || $this->isRelationAttributeEloquent($key)
-            || $this->isRelationAttributeApplication($key);
+            || $this->isRelationAttributeInternal($key)
+            || $this->isRelationAttributeUser($key);
     }
 
-    protected function isRelationAttributeEloquent(string $key) : bool
+    protected function isRelationAttributeInternal(string $key) : bool
     {
         if ('' === $key) {
             return false;
@@ -169,7 +165,7 @@ trait AttributeTrait
         return false;
     }
 
-    protected function isRelationAttributeApplication(string $key) : bool
+    protected function isRelationAttributeUser(string $key) : bool
     {
         if ('' === $key) {
             return false;

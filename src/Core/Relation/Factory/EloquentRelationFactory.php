@@ -15,7 +15,7 @@ use Gzhegow\Orm\Core\Relation\Spec\BelongsToManySpec;
 use Gzhegow\Orm\Core\Relation\Spec\HasOneThroughSpec;
 use Illuminate\Database\Eloquent\Concerns\HasRelationships;
 use Gzhegow\Orm\Core\Relation\Spec\HasManyThroughSpec;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Relations\HasOne;
 use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Relations\HasMany;
 use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -31,12 +31,12 @@ use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Relations\HasManyThrough;
 class EloquentRelationFactory implements EloquentRelationFactoryInterface
 {
     /**
-     * @var EloquentModel
+     * @var AbstractEloquentModel
      */
     protected $model;
 
 
-    public function __construct(EloquentModel $model)
+    public function __construct(AbstractEloquentModel $model)
     {
         $this->model = $model;
     }
@@ -829,7 +829,7 @@ class EloquentRelationFactory implements EloquentRelationFactoryInterface
     }
 
 
-    protected function newModelWithSameConnection(string $modelClass, EloquentModel $modelSource) : EloquentModel
+    protected function newModelWithSameConnection(string $modelClass, AbstractEloquentModel $modelSource) : AbstractEloquentModel
     {
         $instance = $modelSource->newModelWithState(
             $modelClass,
@@ -843,14 +843,14 @@ class EloquentRelationFactory implements EloquentRelationFactoryInterface
     /**
      * @param string $modelClass
      *
-     * @return class-string<EloquentModel>
+     * @return class-string<AbstractEloquentModel>
      */
     protected function assertModelClass(string $modelClass) : string
     {
-        if (! is_subclass_of($modelClass, EloquentModel::class)) {
+        if (! is_subclass_of($modelClass, AbstractEloquentModel::class)) {
             throw new LogicException(
                 [
-                    'The `modelClass` should be class-string of: ' . EloquentModel::class,
+                    'The `modelClass` should be class-string of: ' . AbstractEloquentModel::class,
                     $modelClass,
                 ]
             );
@@ -862,20 +862,25 @@ class EloquentRelationFactory implements EloquentRelationFactoryInterface
     /**
      * @param string $modelClassOrTableName
      *
-     * @return class-string<EloquentModel>|string
+     * @return class-string<AbstractEloquentModel>|string
      */
     protected function assertModelClassOrTableName(string $modelClassOrTableName) : string
     {
+        $theType = Lib::type();
+
         if (false
-            || ! Lib::parse()->struct_class($modelClassOrTableName)
-            || is_subclass_of($modelClassOrTableName, EloquentModel::class)
+            || $theType->struct_class($modelClassOrTableName)->isFail()
+            || is_subclass_of($modelClassOrTableName, AbstractEloquentModel::class)
         ) {
             return $modelClassOrTableName;
         }
 
         throw new LogicException(
             [
-                'The `modelClassOrTableName` should be string (name of the table) or class-string of: ' . EloquentModel::class,
+                ''
+                . 'The `modelClassOrTableName` should be string (name of the table) '
+                . 'or class-string of: ' . AbstractEloquentModel::class,
+                //
                 $modelClassOrTableName,
             ]
         );

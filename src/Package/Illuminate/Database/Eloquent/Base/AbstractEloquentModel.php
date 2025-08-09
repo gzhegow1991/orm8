@@ -3,8 +3,7 @@
 namespace Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base;
 
 use Gzhegow\Lib\Lib;
-use Gzhegow\Lib\Modules\Php\Result\Ret;
-use Gzhegow\Lib\Modules\Php\Result\Result;
+use Gzhegow\Lib\Modules\Type\Ret;
 use Gzhegow\Orm\Exception\RuntimeException;
 use Gzhegow\Orm\Core\Model\Traits\LoadTrait;
 use Gzhegow\Orm\Core\Model\Traits\DateTrait;
@@ -18,7 +17,6 @@ use Gzhegow\Orm\Core\Model\Traits\AttributeTrait;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Gzhegow\Orm\Core\Model\Traits\PersistenceTrait;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Gzhegow\Orm\Exception\Runtime\DeprecatedException;
 use Gzhegow\Orm\Core\Model\Traits\Relation\RelationTrait;
 use Illuminate\Database\Eloquent\Model as EloquentModelBase;
 use Illuminate\Database\Eloquent\Relations\Concerns\AsPivot;
@@ -27,10 +25,10 @@ use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Gzhegow\Orm\Exception\Exception\Resource\ResourceNotFoundException;
 use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\EloquentModelCollection;
 use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\EloquentModelQueryBuilder;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Relations\RelationInterface;
+use Gzhegow\Orm\Core\Relation\Interfaces\RelationInterface;
 
 
-abstract class EloquentModel extends EloquentModelBase
+abstract class AbstractEloquentModel extends EloquentModelBase
 {
     use RelationFactoryTrait;
     use RelationTrait;
@@ -110,35 +108,6 @@ abstract class EloquentModel extends EloquentModelBase
     public $wasRecentlyCreated = false;
 
 
-    public function __toString() : string
-    {
-        // > originally, casting model/collection to string returns JSON, guess to posibility to store whole model to one DB cell
-        // > it is deprecated magic that forces any string casting or dumping to do useless job
-        throw new DeprecatedException('Casting model to string is deprecated');
-    }
-
-
-    public function __isset($key)
-    {
-        return $this->_offsetExists($key);
-    }
-
-    public function __get($key)
-    {
-        return $this->_offsetGet($key);
-    }
-
-    public function __set($key, $value)
-    {
-        return $this->_offsetSet($key, $value);
-    }
-
-    public function __unset($key)
-    {
-        return $this->_offsetUnset($key);
-    }
-
-
     /**
      * @return static
      */
@@ -158,15 +127,32 @@ abstract class EloquentModel extends EloquentModelBase
 
 
     /**
-     * @param Ret $ret
-     *
-     * @return static|bool|null
+     * @return static|Ret<static>
      */
-    public static function fromStatic($from, ?\Closure $fnSetState = null, $ret = null)
+    public static function from($from, ?\Closure $fnSetState = null, ?array $fallback = null)
+    {
+        $ret = Ret::new();
+
+        $instance = null
+            ?? static::fromStatic($from, $fnSetState)->orNull($ret)
+            ?? static::fromStdClass($from, $fnSetState)->orNull($ret)
+            ?? static::fromArray($from, $fnSetState)->orNull($ret);
+
+        if ($ret->isFail()) {
+            return Ret::throw($fallback, $ret);
+        }
+
+        return Ret::ok($fallback, $instance);
+    }
+
+    /**
+     * @return static|Ret<static>
+     */
+    public static function fromStatic($from, ?\Closure $fnSetState = null, ?array $fallback = null)
     {
         if (! ($from instanceof static)) {
-            return Result::err(
-                $ret,
+            return Ret::throw(
+                $fallback,
                 [ 'The `from` should be instance of: ' . static::class, $from ],
                 [ __FILE__, __LINE__ ]
             );
@@ -184,39 +170,17 @@ abstract class EloquentModel extends EloquentModelBase
 
         $instance = static::new($rawAttributes, $fnSetState);
 
-        return Result::ok($ret, $instance);
+        return Ret::ok($fallback, $instance);
     }
 
     /**
-     * @param Ret $ret
-     *
-     * @return static|bool|null
+     * @return static|Ret<static>
      */
-    public static function fromArray($from, ?\Closure $fnSetState = null, $ret = null)
-    {
-        if (! is_array($from)) {
-            return Result::err(
-                $ret,
-                [ 'The `from` should be array', $from ],
-                [ __FILE__, __LINE__ ]
-            );
-        }
-
-        $instance = static::new($from, $fnSetState);
-
-        return Result::ok($ret, $instance);
-    }
-
-    /**
-     * @param Ret $ret
-     *
-     * @return static|bool|null
-     */
-    public static function fromStdClass($from, ?\Closure $fnSetState = null, $ret = null)
+    public static function fromStdClass($from, ?\Closure $fnSetState = null, ?array $fallback = null)
     {
         if (! ($from instanceof \stdClass)) {
-            return Result::err(
-                $ret,
+            return Ret::throw(
+                $fallback,
                 [ 'The `from` should be \stdClass', $from ],
                 [ __FILE__, __LINE__ ]
             );
@@ -224,28 +188,67 @@ abstract class EloquentModel extends EloquentModelBase
 
         $instance = static::new((array) $from, $fnSetState);
 
-        return Result::ok($ret, $instance);
+        return Ret::ok($fallback, $instance);
+    }
+
+    /**
+     * @return static|Ret<static>
+     */
+    public static function fromArray($from, ?\Closure $fnSetState = null, ?array $fallback = null)
+    {
+        if (! is_array($from)) {
+            return Ret::throw(
+                $fallback,
+                [ 'The `from` should be array', $from ],
+                [ __FILE__, __LINE__ ]
+            );
+        }
+
+        $instance = static::new($from, $fnSetState);
+
+        return Ret::ok($fallback, $instance);
     }
 
 
-    protected function _offsetExists($offset)
+    protected function _exists($offset) : bool
     {
         if ($this->isRelationAttribute($offset)) {
-            $exists = $this->isRelationAttributeExists($offset);
-
-            return $exists;
+            if (! $this->isRelationAttributeExists($offset)) {
+                return false;
+            }
         }
 
         if ($this->isModelAttribute($offset)) {
-            $exists = $this->isModelAttributeValueOrGetterExists($offset);
-
-            return $exists;
+            if (! $this->isModelAttributeValueOrGetterExists($offset)) {
+                return false;
+            }
         }
 
-        return false;
+        return true;
     }
 
-    protected function _offsetGet($offset)
+    protected function _isset($offset) : bool
+    {
+        if ($this->isRelationAttribute($offset)) {
+            if (! $this->isRelationAttributeExists($offset)) {
+                return false;
+            }
+        }
+
+        if ($this->isModelAttribute($offset)) {
+            if (! $this->isModelAttributeValueOrGetterExists($offset)) {
+                return false;
+            }
+        }
+
+        if (null === $this->{$offset}) {
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function _get($offset)
     {
         if ($this->isRelationAttribute($offset)) {
             $value = $this->getRelationValue($offset);
@@ -263,8 +266,11 @@ abstract class EloquentModel extends EloquentModelBase
 
                         if ($existsGetter) {
                             throw new RuntimeException(
-                                'Attribute is missing: `' . $offset . '`.'
-                                . ' This message is shown because `preventsLazyGet` is set to TRUE'
+                                [
+                                    ""
+                                    . "Attribute is missing: `{$offset}`."
+                                    . " This message is shown because `preventsLazyGet` is set to TRUE",
+                                ]
                             );
                         }
                     }
@@ -279,7 +285,10 @@ abstract class EloquentModel extends EloquentModelBase
         return null;
     }
 
-    protected function _offsetSet($offset, $value)
+    /**
+     * @return static
+     */
+    protected function _set($offset, $value)
     {
         if ($this->isRelationAttribute($offset)) {
             $this->setRelationAttribute($offset, $value);
@@ -291,7 +300,7 @@ abstract class EloquentModel extends EloquentModelBase
 
                 if ($existsAttribute) {
                     throw new RuntimeException(
-                        'Unable to set attribute due to model `preventsLazySet` is enabled: ' . $offset
+                        [ 'Unable to set attribute due to model `preventsLazySet` is enabled: ' . $offset ]
                     );
                 }
             }
@@ -300,6 +309,7 @@ abstract class EloquentModel extends EloquentModelBase
                 throw new RuntimeException(
                     [
                         'Primary key should be allocated using ->setupUuid() or auto(-increment) by remote storage: ' . $offset,
+                        //
                         $offset,
                         $value,
                     ]
@@ -312,7 +322,10 @@ abstract class EloquentModel extends EloquentModelBase
         return $this;
     }
 
-    protected function _offsetUnset($offset)
+    /**
+     * @return static
+     */
+    protected function _unset($offset)
     {
         if ($this->isRelationAttribute($offset)) {
             unset($this->relations[ $offset ]);
@@ -345,14 +358,13 @@ abstract class EloquentModel extends EloquentModelBase
     }
 
 
-    public function getKey()
+    public static function keyName()
     {
-        /** @see parent::getKey(); */
+        $model = static::getModel();
 
-        $key = $this->getKeyName();
-        $value = $this->getAttribute($key);
+        $key = $model->getKeyName();
 
-        return $value;
+        return $key;
     }
 
     public function getKeyName()
@@ -362,28 +374,23 @@ abstract class EloquentModel extends EloquentModelBase
         return $this->primaryKey;
     }
 
-    public static function keyName()
+    public function getKey()
     {
-        $model = static::getModel();
+        /** @see parent::getKey(); */
 
-        return $model->getKeyName();
+        $key = $this->getKeyName();
+
+        $value = $this->getAttribute($key);
+
+        return $value;
     }
 
 
-    /**
-     * @return string
-     *
-     * @deprecated
-     * @internal
-     */
-    public function getForeignKey()
+    public static function foreignKeyName()
     {
-        /** @see parent::getForeignKey(); */
+        $model = static::getModel();
 
-        $table = $this->getTable();
-        $key = $this->getKeyName();
-
-        return "{$table}_{$key}";
+        return $model->getForeignKeyName();
     }
 
     /**
@@ -396,11 +403,21 @@ abstract class EloquentModel extends EloquentModelBase
         return $key;
     }
 
-    public static function foreignKeyName()
+    /**
+     * @return string
+     *
+     * @deprecated
+     * @internal
+     */
+    public function getForeignKey()
     {
-        $model = static::getModel();
+        /** @see parent::getForeignKey(); */
 
-        return $model->getForeignKeyName();
+        $table = $this->getTable();
+
+        $key = $this->getKeyName();
+
+        return "{$table}_{$key}";
     }
 
 
@@ -434,9 +451,14 @@ abstract class EloquentModel extends EloquentModelBase
 
         foreach ( $this->attributes as $key => $value ) {
             if (isset($relationForeignKeys[ $key ]) && is_object($value)) {
+                $relationForeignKey = $relationForeignKeys[ $key ];
+
                 throw new RuntimeException(
-                    'Unable to associate foreign key: '
-                    . $relationForeignKeys[ $key ] . ' / ' . $key
+                    [
+                        ""
+                        . "Unable to associate foreign key: "
+                        . "[ {$relationForeignKey} ][ {$key} ]",
+                    ]
                 );
             }
         }
@@ -501,7 +523,7 @@ abstract class EloquentModel extends EloquentModelBase
 
             $relationsToUnset[ $relationName ] = true;
 
-            /** @var EloquentModel $parent */
+            /** @var AbstractEloquentModel $parent */
             $parent = $relationValue;
 
             // ! recursion
@@ -529,7 +551,7 @@ abstract class EloquentModel extends EloquentModelBase
                 : ($relationValue ? [ $relationValue ] : []);
 
             foreach ( $children as $child ) {
-                /** @var EloquentModel $model */
+                /** @var AbstractEloquentModel $model */
 
                 // ! recursion
                 if (null === $child->doSaveRecursive($graph)) {
@@ -602,6 +624,8 @@ abstract class EloquentModel extends EloquentModelBase
 
 
     /**
+     * > при помощи этого метода PHPStorm корректно определяет результат выборки запроса и потом работают подсказки
+     *
      * @return EloquentModelCollection<static>|static[]
      */
     public static function get(EloquentModelQueryBuilder $query, $columnsDefault = null)
@@ -610,6 +634,8 @@ abstract class EloquentModel extends EloquentModelBase
     }
 
     /**
+     * > при помощи этого метода PHPStorm корректно определяет результат выборки запроса и потом работают подсказки
+     *
      * @return static|null
      */
     public static function first(EloquentModelQueryBuilder $query, $columnsDefault = null)
@@ -618,6 +644,8 @@ abstract class EloquentModel extends EloquentModelBase
     }
 
     /**
+     * > при помощи этого метода PHPStorm корректно определяет результат выборки запроса и потом работают подсказки
+     *
      * @return static
      * @throws ResourceNotFoundException
      */
@@ -638,14 +666,12 @@ abstract class EloquentModel extends EloquentModelBase
             return null;
         }
 
-        $_with = is_string($with)
-            ? func_get_args()
-            : $with;
+        $withArray = is_string($with) ? func_get_args() : $with;
 
         $query = $this->newModelQuery();
 
         $query->with($this->with);
-        $query->with($_with);
+        $query->with($withArray);
         $query->withCount($this->withCount);
 
         $this->setKeysForSelectQuery($query);
@@ -686,7 +712,9 @@ abstract class EloquentModel extends EloquentModelBase
             }
 
             if (is_object($relation)) {
-                $classUses = Lib::php()->class_uses_with_parents(
+                $thePhp = Lib::php();
+
+                $classUses = $thePhp->class_uses_with_parents(
                     $relation,
                     true
                 );

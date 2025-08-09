@@ -2,25 +2,25 @@
 
 namespace Gzhegow\Orm\Core\Relation\Spec;
 
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\EloquentModelQueryBuilder;
 
 
 /**
- * @property string                             $relationName
+ * @property string                                     $relationName
  *
- * @property EloquentModel                      $thisModel
- * @property EloquentModel                      $throughModel
- * @property EloquentModel                      $remoteModel
- * @property EloquentModelQueryBuilder          $remoteModelQuery
+ * @property AbstractEloquentModel                      $thisModel
+ * @property AbstractEloquentModel                      $throughModel
+ * @property AbstractEloquentModel                      $remoteModel
+ * @property EloquentModelQueryBuilder                  $remoteModelQuery
  *
- * @property string|class-string<EloquentModel> $remoteModelClassOrTableName
- * @property class-string<EloquentModel>        $throughModelClass
+ * @property string|class-string<AbstractEloquentModel> $remoteModelClassOrTableName
+ * @property class-string<AbstractEloquentModel>        $throughModelClass
  *
- * @property string|null                        $thisTableRightKey
- * @property string|null                        $throughTableLeftKey
- * @property string|null                        $throughTableRightKey
- * @property string|null                        $remoteTableLeftKey
+ * @property string|null                                $thisTableRightKey
+ * @property string|null                                $throughTableLeftKey
+ * @property string|null                                $throughTableRightKey
+ * @property string|null                                $remoteTableLeftKey
  */
 class HasOneThroughSpec extends AbstractSpec
 {
@@ -30,15 +30,15 @@ class HasOneThroughSpec extends AbstractSpec
     protected $relationName = [];
 
     /**
-     * @var EloquentModel
+     * @var AbstractEloquentModel
      */
     protected $thisModel = [];
     /**
-     * @var EloquentModel
+     * @var AbstractEloquentModel
      */
     protected $throughModel = [];
     /**
-     * @var EloquentModel
+     * @var AbstractEloquentModel
      */
     protected $remoteModel = [];
     /**
@@ -47,12 +47,12 @@ class HasOneThroughSpec extends AbstractSpec
     protected $remoteModelQuery = [];
 
     /**
-     * @var string|class-string<EloquentModel>
+     * @var string|class-string<AbstractEloquentModel>
      */
     protected $remoteModelClassOrTableName = [];
 
     /**
-     * @var class-string<EloquentModel>
+     * @var class-string<AbstractEloquentModel>
      */
     protected $throughModelClass = [];
 

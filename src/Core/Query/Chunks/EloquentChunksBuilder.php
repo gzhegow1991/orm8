@@ -3,17 +3,16 @@
 namespace Gzhegow\Orm\Core\Query\Chunks;
 
 use Gzhegow\Orm\Core\Orm;
-use Gzhegow\Lib\Modules\Php\Result\Ret;
+use Gzhegow\Lib\Modules\Type\Ret;
 use Gzhegow\Orm\Exception\LogicException;
-use Gzhegow\Lib\Modules\Php\Result\Result;
 use Gzhegow\Orm\Exception\RuntimeException;
 use Gzhegow\Orm\Package\Illuminate\Database\EloquentPdoQueryBuilder;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\EloquentModelQueryBuilder;
 
 
 /**
- * @template-covariant T of EloquentModel
+ * @template-covariant T of AbstractEloquentModel
  */
 class EloquentChunksBuilder
 {
@@ -79,7 +78,7 @@ class EloquentChunksBuilder
      */
     protected $pdoQuery = [];
     /**
-     * @var EloquentModel|null
+     * @var AbstractEloquentModel|null
      */
     protected $model = [];
     /**
@@ -242,33 +241,50 @@ class EloquentChunksBuilder
 
 
     /**
-     * @param Ret $ret
-     *
-     * @return static|bool|null
+     * @return static|Ret<static>
      */
-    public static function fromStatic($from, $ret = null)
+    public static function from($from, ?array $fallback = null)
     {
-        if ($from instanceof static) {
-            return Result::ok($ret, $from);
+        $ret = Ret::new();
+
+        $instance = null
+            ?? static::fromStatic($from)->orNull($ret)
+            ?? static::fromModelQuery($from)->orNull($ret)
+            ?? static::fromPdoQuery($from)->orNull($ret)
+            ?? static::fromModel($from)->orNull($ret)
+            ?? static::fromModelClass($from)->orNull($ret);
+
+        if ($ret->isFail()) {
+            return Ret::throw($fallback, $ret);
         }
 
-        return Result::err(
-            $ret,
+        return Ret::ok($fallback, $instance);
+    }
+
+    /**
+     * @return static|Ret<static>
+     */
+    public static function fromStatic($from, ?array $fallback = null)
+    {
+        if ($from instanceof static) {
+            return Ret::ok($fallback, $from);
+        }
+
+        return Ret::throw(
+            $fallback,
             [ 'The `from` should be instance of: ' . static::class, $from ],
             [ __FILE__, __LINE__ ]
         );
     }
 
     /**
-     * @param Ret $ret
-     *
-     * @return static|bool|null
+     * @return static|Ret<static>
      */
-    public static function fromModelQuery($from, $ret = null)
+    public static function fromModelQuery($from, ?array $fallback = null)
     {
         if (! ($from instanceof EloquentModelQueryBuilder)) {
-            return Result::err(
-                $ret,
+            return Ret::throw(
+                $fallback,
                 [ 'The `from` should be instance of: ' . EloquentModelQueryBuilder::class, $from ],
                 [ __FILE__, __LINE__ ]
             );
@@ -287,19 +303,17 @@ class EloquentChunksBuilder
 
         $instance->offsetColumnDefault = $model->getKeyName();
 
-        return Result::ok($ret, $instance);
+        return Ret::ok($fallback, $instance);
     }
 
     /**
-     * @param Ret $ret
-     *
-     * @return static|bool|null
+     * @return static|Ret<static>
      */
-    public static function fromPdoQuery($from, $ret = null)
+    public static function fromPdoQuery($from, ?array $fallback = null)
     {
         if (! ($from instanceof EloquentPdoQueryBuilder)) {
-            return Result::err(
-                $ret,
+            return Ret::throw(
+                $fallback,
                 [ 'The `from` should be instance of: ' . EloquentPdoQueryBuilder::class, $from ],
                 [ __FILE__, __LINE__ ]
             );
@@ -310,20 +324,18 @@ class EloquentChunksBuilder
         $instance = new static();
         $instance->pdoQuery = $pdoQuery;
 
-        return Result::ok($ret, $instance);
+        return Ret::ok($fallback, $instance);
     }
 
     /**
-     * @param Ret $ret
-     *
-     * @return static|bool|null
+     * @return static|Ret<static>
      */
-    public static function fromModel($from, $ret = null)
+    public static function fromModel($from, ?array $fallback = null)
     {
-        if (! ($from instanceof EloquentModel)) {
-            return Result::err(
-                $ret,
-                [ 'The `from` should be instance of: ' . EloquentModel::class, $from ],
+        if (! ($from instanceof AbstractEloquentModel)) {
+            return Ret::throw(
+                $fallback,
+                [ 'The `from` should be instance of: ' . AbstractEloquentModel::class, $from ],
                 [ __FILE__, __LINE__ ]
             );
         }
@@ -341,28 +353,26 @@ class EloquentChunksBuilder
 
         $instance->offsetColumnDefault = $model->getKeyName();
 
-        return Result::ok($ret, $instance);
+        return Ret::ok($fallback, $instance);
     }
 
     /**
-     * @param Ret $ret
-     *
-     * @return static|bool|null
+     * @return static|Ret<static>
      */
-    public static function fromModelClass($from, $ret = null)
+    public static function fromModelClass($from, ?array $fallback = null)
     {
         if (! (is_string($from) && ('' !== $from))) {
-            return Result::err(
-                $ret,
+            return Ret::throw(
+                $fallback,
                 [ 'The `from` should be non-empty string', $from ],
                 [ __FILE__, __LINE__ ]
             );
         }
 
-        if (! is_subclass_of($from, EloquentModel::class)) {
-            return Result::err(
-                $ret,
-                [ 'The `from` should be class-string of: ' . EloquentModel::class, $from ],
+        if (! is_subclass_of($from, AbstractEloquentModel::class)) {
+            return Ret::throw(
+                $fallback,
+                [ 'The `from` should be class-string of: ' . AbstractEloquentModel::class, $from ],
                 [ __FILE__, __LINE__ ]
             );
         }
@@ -380,7 +390,7 @@ class EloquentChunksBuilder
 
         $instance->offsetColumnDefault = $model->getKeyName();
 
-        return Result::ok($ret, $instance);
+        return Ret::ok($fallback, $instance);
     }
 
 
@@ -400,11 +410,14 @@ class EloquentChunksBuilder
         return $this->pdoQuery;
     }
 
-    public function getModel() : EloquentModel
+    public function getModel() : AbstractEloquentModel
     {
         return $this->model;
     }
 
+    /**
+     * @return class-string<AbstractEloquentModel>
+     */
     public function getModelClass() : string
     {
         return $this->modelClass;
@@ -657,14 +670,12 @@ class EloquentChunksBuilder
      */
     public function setOffsetColumn(?string $offsetColumn)
     {
-        if (null !== $offsetColumn) {
-            if ('' === $offsetColumn) {
-                throw new LogicException(
-                    [
-                        'The `offsetColumn` should be non-empty string',
-                    ]
-                );
-            }
+        if ('' === $offsetColumn) {
+            throw new LogicException(
+                [
+                    'The `offsetColumn` should be non-empty string',
+                ]
+            );
         }
 
         $this->offsetColumn = $offsetColumn ?? $this->offsetColumnDefault;

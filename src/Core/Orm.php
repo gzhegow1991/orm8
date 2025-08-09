@@ -31,18 +31,20 @@ class Orm
 
 
     /**
+     * @noinspection PhpDocSignatureInspection
+     *
      * @template T of (\Closure(array|null $relationFn, string|null $fields) : T|string)
      *
      * @param callable|array|null $relationFn
      *
      * @return T
      */
-    public static function relationDot(
+    public static function fnCurryWith(
         ?array $relationFn = null,
         ?string $fields = null
     )
     {
-        return static::$facade->fnEloquentRelationDotnameCurry($relationFn, $fields);
+        return static::$facade->fnCurryEloquentRelationWith($relationFn, $fields);
     }
 
 

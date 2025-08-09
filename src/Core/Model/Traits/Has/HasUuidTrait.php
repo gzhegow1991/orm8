@@ -3,13 +3,11 @@
 namespace Gzhegow\Orm\Core\Model\Traits\Has;
 
 use Gzhegow\Lib\Lib;
-use Gzhegow\Orm\Exception\LogicException;
-use Gzhegow\Orm\Exception\RuntimeException;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 
 
 /**
- * @mixin EloquentModel
+ * @mixin AbstractEloquentModel
  *
  * @property string $uuid
  */
@@ -17,26 +15,40 @@ trait HasUuidTrait
 {
     public function getUuid() : string
     {
-        if (! Lib::type()->string_not_empty($_uuid, $this->attributes[ 'uuid' ])) {
-            throw new RuntimeException('The `uuid` is empty');
-        }
+        $theType = Lib::type();
 
-        return $_uuid;
+        $uuid = $this->attributes[ 'uuid' ] ?? null;
+
+        $uuidValid = $theType->uuid($uuid)->orThrow();
+
+        return $uuidValid;
     }
 
-    public function hasUuid() : ?string
+    public function hasUuid(&$result = null) : bool
     {
-        return $this->attributes[ 'uuid' ] ?? null;
+        $result = null;
+
+        $theType = Lib::type();
+
+        $uuid = $this->attributes[ 'uuid' ] ?? null;
+
+        $uuidValid = $theType->uuid($uuid)->orNull();
+
+        if (null !== $uuidValid) {
+            $result = $uuidValid;
+
+            return true;
+        }
+
+        return false;
     }
 
 
     public function setUuid($uuid) : void
     {
-        if (! Lib::type()->string_not_empty($_uuid, $uuid)) {
-            throw new LogicException('The `uuid` should be non-empty string');
-        }
+        $uuidValue = Lib::type()->uuid($uuid)->orThrow();
 
-        $this->attributes[ 'uuid' ] = $_uuid;
+        $this->attributes[ 'uuid' ] = $uuidValue;
     }
 
     public function setupUuid($uuid = null) : string
@@ -44,11 +56,14 @@ trait HasUuidTrait
         $current = $this->attributes[ 'uuid' ] ?? null;
 
         if (null === $current) {
-            $_uuid = null
-                ?? Lib::parse()->string_not_empty($uuid)
-                ?? Lib::random()->uuid();
+            if (null !== $uuid) {
+                $uuidValue = Lib::type()->uuid($uuid)->orThrow();
 
-            $this->attributes[ 'uuid' ] = $_uuid;
+            } else {
+                $uuidValue = Lib::random()->uuid();
+            }
+
+            $this->attributes[ 'uuid' ] = $uuidValue;
         }
 
         return $this->attributes[ 'uuid' ];

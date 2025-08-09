@@ -4,11 +4,11 @@ namespace Gzhegow\Orm\Core\Model\Traits;
 
 use Gzhegow\Orm\Core\Orm;
 use Gzhegow\Orm\Core\Persistence\EloquentPersistenceInterface;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 
 
 /**
- * @mixin EloquentModel
+ * @mixin AbstractEloquentModel
  */
 trait PersistenceTrait
 {

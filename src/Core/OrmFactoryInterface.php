@@ -9,10 +9,10 @@ use Illuminate\Database\Schema\Builder as EloquentSchemaBuilder;
 use Gzhegow\Orm\Core\Query\Chunks\EloquentChunksProcessorInterface;
 use Gzhegow\Orm\Package\Illuminate\Database\EloquentPdoQueryBuilder;
 use Gzhegow\Orm\Core\Relation\Factory\EloquentRelationFactoryInterface;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
 use Gzhegow\Orm\Package\Illuminate\Database\Schema\EloquentSchemaBlueprint;
 use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\EloquentModelCollection;
 use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\EloquentModelQueryBuilder;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 
 
 interface OrmFactoryInterface
@@ -24,7 +24,7 @@ interface OrmFactoryInterface
 
 
     public function newEloquentRelationFactory(
-        EloquentModel $model
+        AbstractEloquentModel $model
     ) : EloquentRelationFactoryInterface;
 
 
@@ -42,7 +42,9 @@ interface OrmFactoryInterface
     ) : EloquentPdoQueryBuilder;
 
     /**
-     * @template-covariant T of EloquentModel
+     * @noinspection PhpDocSignatureInspection
+     *
+     * @template-covariant T of AbstractEloquentModel
      *
      * @param T $model
      *
@@ -51,16 +53,16 @@ interface OrmFactoryInterface
     public function newEloquentModelQueryBuilder(
         EloquentPdoQueryBuilder $query,
         //
-        EloquentModel $model
+        AbstractEloquentModel $model
     ) : EloquentModelQueryBuilder;
 
 
     /**
-     * @template-covariant T of EloquentModel
+     * @template-covariant T of AbstractEloquentModel
      *
      * @param iterable<T> $models
      *
-     * @return EloquentModelCollection<T>|T[]
+     * @return EloquentModelCollection<T>
      */
     public function newEloquentModelCollection(
         iterable $models = []

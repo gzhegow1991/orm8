@@ -4,11 +4,11 @@ namespace Gzhegow\Orm\Core\Model\Traits\Has;
 
 use Gzhegow\Lib\Lib;
 use Illuminate\Database\Eloquent\Concerns\HasTimestamps;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 
 
 /**
- * @mixin EloquentModel
+ * @mixin AbstractEloquentModel
  *
  * @property \DateTimeInterface $created_at
  * @property \DateTimeInterface $updated_at

@@ -1,6 +1,6 @@
 <?php
 
-namespace Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Relations;
+namespace Gzhegow\Orm\Core\Relation\Interfaces;
 
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\EloquentModelQueryBuilder;
@@ -10,6 +10,6 @@ use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\EloquentModelQueryBuilder;
  * @mixin Relation
  * @mixin EloquentModelQueryBuilder
  */
-interface RelationInterface
+interface RelationOneInterface extends RelationInterface
 {
 }

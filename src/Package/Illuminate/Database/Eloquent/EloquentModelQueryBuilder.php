@@ -17,11 +17,11 @@ use Gzhegow\Orm\Core\Query\ModelQuery\Traits\PersistenceTrait;
 use Illuminate\Database\Eloquent\Builder as EloquentQueryBuilderBase;
 use Gzhegow\Orm\Package\Illuminate\Database\EloquentPdoQueryBuilder;
 use Gzhegow\Orm\Exception\Exception\Resource\ResourceNotFoundException;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 
 
 /**
- * @template-covariant T of EloquentModel
+ * @template-covariant T of AbstractEloquentModel
  */
 class EloquentModelQueryBuilder extends EloquentQueryBuilderBase
 {
@@ -38,12 +38,15 @@ class EloquentModelQueryBuilder extends EloquentQueryBuilderBase
 
 
     /**
-     * @param T $model
+     * @noinspection PhpDocSignatureInspection
+     *
+     * @param EloquentPdoQueryBuilder $query
+     * @param T                       $model
      */
     public function __construct(
         EloquentPdoQueryBuilder $query,
         //
-        EloquentModel $model
+        AbstractEloquentModel $model
     )
     {
         parent::__construct($query);
@@ -74,19 +77,18 @@ class EloquentModelQueryBuilder extends EloquentQueryBuilderBase
     }
 
     /**
-     * @param T $model
-     *
      * @return static
      */
     public function setModel(Model $model)
     {
-        $this->doSetModel($model);
+        /** @see parent::setModel() */
 
-        return $this;
-    }
+        if (! ($model instanceof AbstractEloquentModel)) {
+            throw new LogicException(
+                [ 'The `model` must be instance of: ' . AbstractEloquentModel::class ]
+            );
+        }
 
-    private function doSetModel(EloquentModel $model)
-    {
         parent::setModel($model);
 
         return $this;
@@ -701,7 +703,7 @@ class EloquentModelQueryBuilder extends EloquentQueryBuilderBase
     protected function parseWithRelations_scopePrepareColumns(Relation $query, array $columnsUser = [])
     {
         /** @var EloquentPdoQueryBuilder $pdoQuery */
-        /** @var EloquentModel $relatedModel */
+        /** @var AbstractEloquentModel $relatedModel */
 
         $columns = [];
 

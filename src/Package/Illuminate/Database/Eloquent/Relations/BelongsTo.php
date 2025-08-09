@@ -3,33 +3,38 @@
 namespace Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Relations;
 
 use Gzhegow\Orm\Core\Relation\Traits\HasRelationNameTrait;
+use Gzhegow\Orm\Core\Relation\Interfaces\RelationInterface;
+use Gzhegow\Orm\Core\Relation\Interfaces\RelationOneInterface;
 use Illuminate\Database\Eloquent\Relations\BelongsTo as BelongsToBase;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
+use Gzhegow\Orm\Core\Relation\Interfaces\RelationCanAssociateInterface;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 
 
+/**
+ * @template-covariant TModel of AbstractEloquentModel
+ */
 class BelongsTo extends BelongsToBase implements
-    RelationInterface
+    RelationInterface,
+    RelationOneInterface,
+    RelationCanAssociateInterface
 {
     use HasRelationNameTrait;
 
 
     /**
-     * @param EloquentModel $model
+     * @var TModel
+     */
+    protected $child;
+
+
+    /**
+     * @param AbstractEloquentModel $model
      *
-     * @return EloquentModel
+     * @return TModel
      */
     public function associate($model)
     {
         /** @see parent::associate() */
-
-        $child = $this->doAssociate($model);
-
-        return $child;
-    }
-
-    private function doAssociate(?EloquentModel $model) : EloquentModel
-    {
-        /** @var EloquentModel $child */
 
         $child = $this->child;
 
@@ -48,20 +53,11 @@ class BelongsTo extends BelongsToBase implements
 
 
     /**
-     * @return EloquentModel
+     * @return TModel
      */
     public function dissociate()
     {
         /** @see parent::dissociate() */
-
-        $child = $this->doDissociate();
-
-        return $child;
-    }
-
-    private function doDissociate() : EloquentModel
-    {
-        /** @var EloquentModel $child */
 
         $child = $this->child;
 
@@ -71,7 +67,6 @@ class BelongsTo extends BelongsToBase implements
 
         return $child;
     }
-
 
 
     public function addConstraints()

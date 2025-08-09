@@ -10,11 +10,15 @@ class Base64SerializeCast implements CastsAttributes
 {
     public function get($model, $key, $value, $attributes)
     {
-        return unserialize(base64_decode($value));
+        $theFormatBase64 = Lib::formatBase64();
+
+        return unserialize($theFormatBase64->base64_decode([], $value));
     }
 
     public function set($model, $key, $value, $attributes)
     {
-        return base64_encode(serialize($value));
+        $theFormatBase64 = Lib::formatBase64();
+
+        return $theFormatBase64->base64_encode([], serialize($value));
     }
 }

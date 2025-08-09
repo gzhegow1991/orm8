@@ -4,20 +4,20 @@ namespace Gzhegow\Orm\Core\Model\Traits\Relation;
 
 use Gzhegow\Orm\Exception\LogicException;
 use Gzhegow\Orm\Exception\RuntimeException;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Concerns\HasAttributes;
 use Illuminate\Database\Eloquent\Concerns\HasRelationships;
+use Gzhegow\Orm\Core\Relation\Interfaces\RelationInterface;
+use Gzhegow\Orm\Core\Relation\Interfaces\RelationOneInterface;
+use Gzhegow\Orm\Core\Relation\Interfaces\RelationManyInterface;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
+use Gzhegow\Orm\Core\Relation\Interfaces\RelationCanAssociateInterface;
 use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\EloquentModelCollection;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Relations\RelationInterface;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 
 
 /**
- * @mixin EloquentModel
+ * @mixin AbstractEloquentModel
  */
 trait RelationTrait
 {
@@ -42,7 +42,7 @@ trait RelationTrait
 
 
     /**
-     * @var array<class-string<EloquentModel>, array<string, class-string<RelationInterface>>>
+     * @var array<class-string<AbstractEloquentModel>, array<string, class-string<RelationInterface>>>
      */
     protected static $cacheRelationClasses = [];
 
@@ -157,8 +157,8 @@ trait RelationTrait
         /** @see HasAttributes::isRelation() */
 
         return false
-            || $this->isRelationAttributeEloquent($key)
-            || $this->isRelationAttributeApplication($key);
+            || $this->isRelationAttributeInternal($key)
+            || $this->isRelationAttributeUser($key);
     }
 
 
@@ -167,7 +167,7 @@ trait RelationTrait
      */
     public function hasRelation(string $key) : ?string
     {
-        if (! $this->isRelationAttributeApplication($key)) {
+        if (! $this->isRelationAttributeUser($key)) {
             return null;
         }
 
@@ -177,7 +177,7 @@ trait RelationTrait
     }
 
     /**
-     * @return class-string<BelongsTo|HasOne|MorphOne>|null
+     * @return class-string<RelationOneInterface>|null
      */
     public function hasRelationOne(string $key) : ?string
     {
@@ -185,11 +185,7 @@ trait RelationTrait
             return null;
         }
 
-        if ((false
-            || is_a($relationClass, BelongsTo::class, true)
-            || is_a($relationClass, HasOne::class, true)
-            || is_a($relationClass, MorphOne::class, true)
-        )) {
+        if (is_subclass_of($relationClass, RelationOneInterface::class)) {
             return $relationClass;
         }
 
@@ -197,7 +193,7 @@ trait RelationTrait
     }
 
     /**
-     * @return class-string<RelationInterface>|null
+     * @return class-string<RelationManyInterface>|null
      */
     public function hasRelationMany(string $key) : ?string
     {
@@ -205,11 +201,23 @@ trait RelationTrait
             return null;
         }
 
-        if (! (false
-            || is_a($relationClass, BelongsTo::class, true)
-            || is_a($relationClass, HasOne::class, true)
-            || is_a($relationClass, MorphOne::class, true)
-        )) {
+        if (is_subclass_of($relationClass, RelationManyInterface::class)) {
+            return $relationClass;
+        }
+
+        return null;
+    }
+
+    /**
+     * @return class-string<RelationCanAssociateInterface>|null
+     */
+    public function hasRelationCanAssociate(string $key) : ?string
+    {
+        if (null === ($relationClass = $this->hasRelation($key))) {
+            return null;
+        }
+
+        if (is_subclass_of($relationClass, RelationCanAssociateInterface::class)) {
             return $relationClass;
         }
 
@@ -239,7 +247,7 @@ trait RelationTrait
 
     public function hasRelationship(string $key, ...$args) : ?RelationInterface
     {
-        if (! $this->isRelationAttributeApplication($key)) {
+        if (! $this->isRelationAttributeUser($key)) {
             return null;
         }
 
@@ -248,45 +256,49 @@ trait RelationTrait
         return $relationship;
     }
 
-    /**
-     * @return BelongsTo|HasOne|MorphOne|null
-     */
-    public function hasRelationshipOne(string $key, ...$args) : ?RelationInterface
+    public function hasRelationshipOne(string $key, ...$args) : ?RelationOneInterface
     {
-        if (! $this->isRelationAttributeApplication($key)) {
+        if (! $this->isRelationAttributeUser($key)) {
             return null;
         }
 
         $relationship = $this->{$key}(...$args);
 
-        if (false
-            || $relationship instanceof BelongsTo
-            || $relationship instanceof HasOne
-            || $relationship instanceof MorphOne
-        ) {
+        if ($relationship instanceof RelationOneInterface) {
             return $relationship;
         }
 
         return null;
     }
 
-    public function hasRelationshipMany(string $key, ...$args) : ?RelationInterface
+    public function hasRelationshipMany(string $key, ...$args) : ?RelationManyInterface
     {
-        if (! $this->isRelationAttributeApplication($key)) {
+        if (! $this->isRelationAttributeUser($key)) {
             return null;
         }
 
         $relationship = $this->{$key}(...$args);
 
-        if (false
-            || $relationship instanceof BelongsTo
-            || $relationship instanceof HasOne
-            || $relationship instanceof MorphOne
-        ) {
+        if ($relationship instanceof RelationManyInterface) {
+            return $relationship;
+        }
+
+        return null;
+    }
+
+    public function hasRelationshipCanAssociate(string $key, ...$args) : ?RelationCanAssociateInterface
+    {
+        if (! $this->isRelationAttributeUser($key)) {
             return null;
         }
 
-        return $relationship;
+        $relationship = $this->{$key}(...$args);
+
+        if ($relationship instanceof RelationCanAssociateInterface) {
+            return $relationship;
+        }
+
+        return null;
     }
 
     /**
@@ -296,9 +308,9 @@ trait RelationTrait
      *
      * @return T|null
      */
-    public function hasRelationshipOfClass(string $key, string $ofClass, ...$args) : ?RelationInterface
+    public function hasRelationshipOfClass(string $key, string $ofClass, ...$args)
     {
-        if (! $this->isRelationAttributeApplication($key)) {
+        if (! $this->isRelationAttributeUser($key)) {
             return null;
         }
 
@@ -323,7 +335,7 @@ trait RelationTrait
     }
 
     /**
-     * @template-covariant T of EloquentModel
+     * @template-covariant T of AbstractEloquentModel
      * @template-covariant TT of EloquentModelCollection<T>
      *
      * @param T|TT|null $result
@@ -342,7 +354,7 @@ trait RelationTrait
     }
 
     /**
-     * @template-covariant T of EloquentModel
+     * @template-covariant T of AbstractEloquentModel
      * @template-covariant TT of EloquentModelCollection
      *
      * @return T|TT

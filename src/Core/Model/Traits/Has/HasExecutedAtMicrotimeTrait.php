@@ -3,11 +3,11 @@
 namespace Gzhegow\Orm\Core\Model\Traits\Has;
 
 use Gzhegow\Lib\Lib;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 
 
 /**
- * @mixin EloquentModel
+ * @mixin AbstractEloquentModel
  *
  * @property string $executed_at_microtime
  */
@@ -15,15 +15,17 @@ trait HasExecutedAtMicrotimeTrait
 {
     public function setExecutedAtMicrotime($executedAtMicrotime) : void
     {
-        $_executedAtMicrotime = $executedAtMicrotime;
+        $executedAtMicrotimeString = $executedAtMicrotime;
 
-        if (null !== $_executedAtMicrotime) {
-            Lib::date()->type_idate_microtime($_executedAt, $_executedAtMicrotime);
+        if (null !== $executedAtMicrotimeString) {
+            $theDate = Lib::date();
 
-            $_executedAtMicrotime = Lib::date()->format_usec($_executedAt);
+            $executedAtMicrotimeString = $theDate->type_idate_microtime($executedAtMicrotime)->orThrow();
+
+            $executedAtMicrotimeString = $theDate->format_usec($executedAtMicrotimeString);
         }
 
-        $this->attributes[ 'executed_at_microtime' ] = $_executedAtMicrotime;
+        $this->attributes[ 'executed_at_microtime' ] = $executedAtMicrotimeString;
     }
 
     public function setupExecutedAtMicrotime($executedAtMicrotime = null) : string
@@ -31,14 +33,18 @@ trait HasExecutedAtMicrotimeTrait
         $current = $this->attributes[ 'executed_at_microtime' ] ?? null;
 
         if (null === $current) {
+            $theDate = Lib::date();
+
             if (null === $executedAtMicrotime) {
-                $_executedAt = Lib::date()->idate_now();
+                $executedAtMicrotimeString = $theDate->idate_now();
 
             } else {
-                Lib::date()->type_idate_microtime($_executedAt, $executedAtMicrotime);
+                $executedAtMicrotimeString = $theDate->type_idate_microtime($executedAtMicrotime)->orThrow();
             }
 
-            $this->attributes[ 'executed_at_microtime' ] = Lib::date()->format_usec($_executedAt);
+            $executedAtMicrotimeString = $theDate->format_usec($executedAtMicrotimeString);
+
+            $this->attributes[ 'executed_at_microtime' ] = $executedAtMicrotimeString;
         }
 
         return $this->executed_at_microtime;

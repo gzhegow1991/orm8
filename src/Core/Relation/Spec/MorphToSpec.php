@@ -2,26 +2,26 @@
 
 namespace Gzhegow\Orm\Core\Relation\Spec;
 
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\EloquentModelQueryBuilder;
 
 
 /**
- * @property string                       $relationName
+ * @property string                               $relationName
  *
- * @property EloquentModel                $thisModel
- * @property EloquentModel                $morphModel
- * @property EloquentModelQueryBuilder    $morphModelQuery
+ * @property AbstractEloquentModel                $thisModel
+ * @property AbstractEloquentModel                $morphModel
+ * @property EloquentModelQueryBuilder            $morphModelQuery
  *
- * @property  string|null                 $morphType
- * @property  string|null                 $morphTypeKey
- * @property  string|null                 $morphIdKey
+ * @property  string|null                         $morphType
+ * @property  string|null                         $morphTypeKey
+ * @property  string|null                         $morphIdKey
  *
- * @property  class-string<EloquentModel> $morphClass
+ * @property  class-string<AbstractEloquentModel> $morphClass
  *
- * @property string|null                  $remoteTableLeftKey
+ * @property string|null                          $remoteTableLeftKey
  *
- * @property bool                         $inverse
+ * @property bool                                 $inverse
  */
 class MorphToSpec extends AbstractSpec
 {
@@ -31,11 +31,11 @@ class MorphToSpec extends AbstractSpec
     protected $relationName = [];
 
     /**
-     * @var EloquentModel
+     * @var AbstractEloquentModel
      */
     protected $thisModel = [];
     /**
-     * @var EloquentModel
+     * @var AbstractEloquentModel
      */
     protected $morphModel = [];
     /**
@@ -57,7 +57,7 @@ class MorphToSpec extends AbstractSpec
     protected $morphIdKey = [];
 
     /**
-     * @var class-string<EloquentModel>
+     * @var class-string<AbstractEloquentModel>
      */
     protected $morphClass = [];
 

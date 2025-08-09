@@ -4,12 +4,12 @@ namespace Gzhegow\Orm\Core\Model\Traits;
 
 use Illuminate\Database\ConnectionInterface;
 use Gzhegow\Orm\Package\Illuminate\Database\EloquentPdoQueryBuilder;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\EloquentModelQueryBuilder;
 
 
 /**
- * @mixin EloquentModel
+ * @mixin AbstractEloquentModel
  */
 trait QueryTrait
 {

@@ -5,12 +5,12 @@ namespace Gzhegow\Orm\Package\Illuminate\Database\Eloquent;
 use Gzhegow\Orm\Exception\LogicException;
 use Gzhegow\Orm\Exception\RuntimeException;
 use Gzhegow\Orm\Exception\Runtime\DeprecatedException;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 use Illuminate\Database\Eloquent\Collection as EloquentModelCollectionBase;
 
 
 /**
- * @template-covariant T of EloquentModel
+ * @template-covariant T of AbstractEloquentModel
  */
 class EloquentModelCollection extends EloquentModelCollectionBase
 {
@@ -41,10 +41,10 @@ class EloquentModelCollection extends EloquentModelCollectionBase
             ? get_class($modelOrClass)
             : $modelOrClass;
 
-        if (! is_subclass_of($modelOrClass, EloquentModel::class)) {
+        if (! is_subclass_of($modelOrClass, AbstractEloquentModel::class)) {
             throw new LogicException(
                 [
-                    'The `modelOrClass` should be instance of class-string of: ' . EloquentModel::class,
+                    'The `modelOrClass` should be instance of class-string of: ' . AbstractEloquentModel::class,
                     $modelOrClass,
                 ]
             );
@@ -125,7 +125,7 @@ class EloquentModelCollection extends EloquentModelCollectionBase
         $function = $function ?? __FUNCTION__;
 
         foreach ( $this->items as $item ) {
-            if (! is_a($item, EloquentModel::class)) {
+            if (! is_a($item, AbstractEloquentModel::class)) {
                 throw new RuntimeException(
                     "Unable to call {$function}() due to collection contains non-models"
                 );

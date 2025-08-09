@@ -2,24 +2,24 @@
 
 namespace Gzhegow\Orm\Core\Relation\Spec;
 
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\EloquentModelQueryBuilder;
 
 
 /**
- * @property string                             $relationName
+ * @property string                                     $relationName
  *
- * @property EloquentModel                      $thisModel
- * @property EloquentModel                      $remoteModel
- * @property EloquentModelQueryBuilder          $remoteModelQuery
+ * @property AbstractEloquentModel                      $thisModel
+ * @property AbstractEloquentModel                      $remoteModel
+ * @property EloquentModelQueryBuilder                  $remoteModelQuery
  *
- * @property string|class-string<EloquentModel> $remoteModelClassOrTableName
+ * @property string|class-string<AbstractEloquentModel> $remoteModelClassOrTableName
  *
- * @property string|null                        $morphType
- * @property string|null                        $morphTypeKey
- * @property string|null                        $morphIdKey
+ * @property string|null                                $morphType
+ * @property string|null                                $morphTypeKey
+ * @property string|null                                $morphIdKey
  *
- * @property string|null                        $thisTableRightKey
+ * @property string|null                                $thisTableRightKey
  */
 class MorphManySpec extends AbstractSpec
 {
@@ -29,11 +29,11 @@ class MorphManySpec extends AbstractSpec
     protected $relationName = [];
 
     /**
-     * @var EloquentModel
+     * @var AbstractEloquentModel
      */
     protected $thisModel = [];
     /**
-     * @var EloquentModel
+     * @var AbstractEloquentModel
      */
     protected $remoteModel = [];
     /**
@@ -42,7 +42,7 @@ class MorphManySpec extends AbstractSpec
     protected $remoteModelQuery = [];
 
     /**
-     * @var string|class-string<EloquentModel>
+     * @var string|class-string<AbstractEloquentModel>
      */
     protected $remoteModelClassOrTableName = [];
 

@@ -7,7 +7,7 @@ use Illuminate\Database\Connection;
 use Illuminate\Database\Eloquent\Relations\HasOneOrMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Query\Builder as EloquentPdoQueryBuilderBase;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 use Illuminate\Database\Eloquent\Builder as EloquentModelQueryBuilderBase;
 
 
@@ -18,7 +18,7 @@ interface EloquentPersistenceInterface
 
     public function persistBelongsToManyForSave(
         BelongsToMany $relation,
-        EloquentModel $model, array $pivotAttributes = [], ?bool $touch = null
+        AbstractEloquentModel $model, array $pivotAttributes = [], ?bool $touch = null
     ) : void;
 
     public function persistBelongsToManyForSaveMany(
@@ -34,7 +34,7 @@ interface EloquentPersistenceInterface
 
     public function persistHasOneOrManyForSave(
         HasOneOrMany $relation,
-        EloquentModel $model
+        AbstractEloquentModel $model
     ) : void;
 
     public function persistHasOneOrManyForSaveMany(
@@ -43,14 +43,14 @@ interface EloquentPersistenceInterface
     ) : void;
 
 
-    public function persistModelForSaveRecursive(EloquentModel $model) : void;
+    public function persistModelForSaveRecursive(AbstractEloquentModel $model) : void;
 
-    public function persistModelForDeleteRecursive(EloquentModel $model) : void;
+    public function persistModelForDeleteRecursive(AbstractEloquentModel $model) : void;
 
 
-    public function persistModelForSave(EloquentModel $model) : void;
+    public function persistModelForSave(AbstractEloquentModel $model) : void;
 
-    public function persistModelForDelete(EloquentModel $model) : void;
+    public function persistModelForDelete(AbstractEloquentModel $model) : void;
 
 
     public function persistEloquentQueryForInsert(EloquentModelQueryBuilderBase $query, array $values) : void;

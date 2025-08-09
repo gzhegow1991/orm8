@@ -3,11 +3,11 @@
 namespace Gzhegow\Orm\Core\Model\Traits\Has;
 
 use Gzhegow\Lib\Lib;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 
 
 /**
- * @mixin EloquentModel
+ * @mixin AbstractEloquentModel
  *
  * @property \DateTimeInterface $created_at
  */
@@ -15,13 +15,15 @@ trait HasCreatedAtTrait
 {
     public function setCreatedAt($createdAt) : void
     {
-        $_createdAt = $createdAt;
+        $createdAtObject = $createdAt;
 
-        if (null !== $_createdAt) {
-            Lib::date()->type_idate($_createdAt, $_createdAt);
+        if (null !== $createdAt) {
+            $theType = Lib::type();
+
+            $createdAtObject = $theType->idate($createdAt)->orThrow();
         }
 
-        $this->attributes[ 'created_at' ] = $_createdAt;
+        $this->attributes[ 'created_at' ] = $createdAtObject;
     }
 
     public function setupCreatedAt($createdAt = null) : string
@@ -29,14 +31,16 @@ trait HasCreatedAtTrait
         $current = $this->attributes[ 'created_at' ] ?? null;
 
         if (null === $current) {
+            $theDate = Lib::date();
+
             if (null === $createdAt) {
-                $_createdAt = Lib::date()->idate_now();
+                $createdAtObject = $theDate->idate_now();
 
             } else {
-                Lib::date()->type_idate($_createdAt, $createdAt);
+                $createdAtObject = $theDate->type_idate($createdAt)->orThrow();
             }
 
-            $this->attributes[ 'created_at' ] = $_createdAt;
+            $this->attributes[ 'created_at' ] = $createdAtObject;
         }
 
         return $this->created_at;

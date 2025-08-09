@@ -6,11 +6,11 @@ use Gzhegow\Lib\Lib;
 use Gzhegow\Orm\Core\Orm;
 use Gzhegow\Orm\Exception\LogicException;
 use Illuminate\Database\Schema\Builder as EloquentSchemaBuilder;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 
 
 /**
- * @mixin EloquentModel
+ * @mixin AbstractEloquentModel
  */
 trait TableTrait
 {

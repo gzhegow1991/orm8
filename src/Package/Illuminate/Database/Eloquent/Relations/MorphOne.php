@@ -4,13 +4,16 @@ namespace Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Relations;
 
 use Gzhegow\Orm\Core\Orm;
 use Gzhegow\Orm\Core\Relation\Traits\HasRelationNameTrait;
+use Gzhegow\Orm\Core\Relation\Interfaces\RelationInterface;
 use Gzhegow\Orm\Core\Persistence\EloquentPersistenceInterface;
+use Gzhegow\Orm\Core\Relation\Interfaces\RelationOneInterface;
 use Illuminate\Database\Eloquent\Relations\MorphOne as MorphOneBase;
-use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\EloquentModel;
+use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Base\AbstractEloquentModel;
 
 
 class MorphOne extends MorphOneBase implements
-    RelationInterface
+    RelationInterface,
+    RelationOneInterface
 {
     use HasRelationNameTrait;
 
@@ -25,7 +28,7 @@ class MorphOne extends MorphOneBase implements
     /**
      * @return static
      */
-    public function persistForSave(EloquentModel $model)
+    public function persistForSave(AbstractEloquentModel $model)
     {
         $persistence = $this->persistence();
 

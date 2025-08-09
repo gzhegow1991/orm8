@@ -17,11 +17,13 @@ interface OrmInterface
 
 
     /**
+     * @noinspection PhpDocSignatureInspection
+     *
      * @template T of (\Closure(array|null $relationFn, string|null $fields) : T|string)
      *
      * @param callable|array|null $relationFn
      *
      * @return T
      */
-    public function fnEloquentRelationDotnameCurry(?array $relationFn = null, ?string $fields = null);
+    public function fnCurryEloquentRelationWith(?array $relationFn = null, ?string $fields = null);
 }
