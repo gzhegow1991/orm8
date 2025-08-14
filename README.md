@@ -261,39 +261,84 @@ $builder
     ->defaultStringLength(150)
     //
     // > добавить соединения с БД
-    ->fnInit(
-        static function ($eloquent) {
-            $eloquent->addConnection(
-                [
-                    'driver' => 'mysql',
-
-                    'host' => 'localhost',
-                    'port' => 3306,
-
-                    'username' => 'root',
-                    'password' => '',
-
-                    'database' => 'test',
-
-                    'charset'   => 'utf8mb4',
-                    'collation' => 'utf8mb4_unicode_ci',
-
-                    'options' => [
-                        // > always throw an exception if any error occured
-                        \PDO::ATTR_ERRMODE           => \PDO::ERRMODE_EXCEPTION,
-                        //
-                        // > calculate $pdo->prepare() on PHP level instead of sending it to MySQL as is
-                        \PDO::ATTR_EMULATE_PREPARES  => true,
-                        //
-                        // > since (PHP_VERSION_ID > 80100) mysql `integer` returns integer
-                        // > setting ATTR_STRINGIFY_FETCHES flag to TRUE forces returning numeric string
-                        \PDO::ATTR_STRINGIFY_FETCHES => true,
-                    ],
-                ],
-                $connName = 'default'
-            );
-        }
+    // ->addConnectionDefault([])
+    ->addConnection(
+        'default',
+        [
+            0         => 'mysql:host=localhost;port=3306;dbname=test;charset=utf8mb4',
+            // 'dsn'             => 'mysql:host=localhost;port=3306;dbname=test;charset=utf8mb4',
+            //
+            1         => 'root',
+            // 'username'        => 'root',
+            //
+            2         => '',
+            // 'password'        => '',
+            //
+            3         => [
+                // > always throw an exception if any error occured
+                \PDO::ATTR_ERRMODE           => \PDO::ERRMODE_EXCEPTION,
+                //
+                // > calculate $pdo->prepare() on PHP level instead of sending it to MySQL as is
+                \PDO::ATTR_EMULATE_PREPARES  => true,
+                //
+                // > since (PHP_VERSION_ID > 80100) mysql `integer` returns integer
+                // > setting ATTR_STRINGIFY_FETCHES flag to TRUE forces returning numeric string
+                \PDO::ATTR_STRINGIFY_FETCHES => true,
+            ],
+            // 'pdo_options_new' => [],
+            //
+            'collate' => 'utf8mb4_unicode_ci',
+            //
+            'read'    => [
+                [ 'host' => 'localhost' ],
+            ],
+            'write'   => [
+                [ 'host' => 'localhost' ],
+            ],
+        ]
     )
+    //
+    // > или по-старинке...
+    // ->fnInit(
+    //     static function ($eloquent) {
+    //         $eloquent->addConnection(
+    //             [
+    //                 'driver' => 'mysql',
+    //
+    //                 'host' => 'localhost',
+    //                 'port' => 3306,
+    //
+    //                 'username' => 'root',
+    //                 'password' => '',
+    //
+    //                 'database' => 'test',
+    //
+    //                 'charset'   => 'utf8mb4',
+    //                 'collation' => 'utf8mb4_unicode_ci',
+    //
+    //                 'options' => [
+    //                     // > always throw an exception if any error occured
+    //                     \PDO::ATTR_ERRMODE           => \PDO::ERRMODE_EXCEPTION,
+    //                     //
+    //                     // > calculate $pdo->prepare() on PHP level instead of sending it to MySQL as is
+    //                     \PDO::ATTR_EMULATE_PREPARES  => true,
+    //                     //
+    //                     // > since (PHP_VERSION_ID > 80100) mysql `integer` returns integer
+    //                     // > setting ATTR_STRINGIFY_FETCHES flag to TRUE forces returning numeric string
+    //                     \PDO::ATTR_STRINGIFY_FETCHES => true,
+    //                 ],
+    //
+    //                 'read'  => [
+    //                     [ 'host' => 'localhost' ],
+    //                 ],
+    //                 'write' => [
+    //                     [ 'host' => 'localhost' ],
+    //                 ],
+    //             ],
+    //             $connName = 'default'
+    //         );
+    //     }
+    // )
     // //
     // // > выполнить сразу после инициализации Eloquent
     // ->fnBoot(

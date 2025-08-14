@@ -10,15 +10,15 @@ class Base64Cast implements CastsAttributes
 {
     public function get($model, $key, $value, $attributes)
     {
-        $theFormatBase64 = Lib::formatBase64();
+        $theFormatBaseN = Lib::formatBaseN();
 
-        return $theFormatBase64->base64_decode([], $value);
+        return $theFormatBaseN->base64_decode([], $value);
     }
 
     public function set($model, $key, $value, $attributes)
     {
-        $theFormatBase64 = Lib::formatBase64();
+        $theFormatBaseN = Lib::formatBaseN();
 
-        return $theFormatBase64->base64_encode([], $value);
+        return $theFormatBaseN->base64_encode([], $value);
     }
 }

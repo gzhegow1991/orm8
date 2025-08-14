@@ -2,6 +2,9 @@
 
 namespace Gzhegow\Orm\Core;
 
+use Gzhegow\Orm\Core\Orm\OrmConnection;
+use Gzhegow\Lib\Connect\Pdo\PdoAdapter;
+use Gzhegow\Orm\Exception\RuntimeException;
 use Gzhegow\Lib\Exception\Runtime\ComposerException;
 use Gzhegow\Orm\Core\Persistence\EloquentPersistence;
 use Illuminate\Container\Container as IlluminateContainer;
@@ -36,6 +39,11 @@ class OrmBuilder implements OrmBuilderInterface
      * @var EloquentPersistenceInterface
      */
     protected $persistence;
+
+    /**
+     * @var array<string, OrmConnection>
+     */
+    protected $connectionList = [];
 
     /**
      * @var int
@@ -100,6 +108,45 @@ class OrmBuilder implements OrmBuilderInterface
     public function setPersistence(?EloquentPersistenceInterface $persistence)
     {
         $this->persistence = $persistence;
+
+        return $this;
+    }
+
+
+    /**
+     * @return array<string, OrmConnection>
+     */
+    public function getConnections() : array
+    {
+        return $this->connectionList;
+    }
+
+    /**
+     * @param mixed|OrmConnection $connection
+     *
+     * @return static
+     */
+    public function addConnectionDefault($connection)
+    {
+        return $this->addConnection('default', $connection);
+    }
+
+    /**
+     * @param mixed|OrmConnection $connection
+     *
+     * @return static
+     */
+    public function addConnection(string $name, $connection)
+    {
+        if (isset($this->connectionList[ $name ])) {
+            throw new RuntimeException(
+                [ 'The connection with given name is already registered: ' . $name, $connection ]
+            );
+        }
+
+        $connectionObject = OrmConnection::from($connection)->orThrow();
+
+        $this->connectionList[ $name ] = $connectionObject;
 
         return $this;
     }
@@ -185,6 +232,41 @@ class OrmBuilder implements OrmBuilderInterface
             $this->eloquent->setEventDispatcher($this->illuminateEventDispatcher);
         }
 
+        if ([] !== $this->connectionList) {
+            foreach ( $this->connectionList as $name => $ormConnection ) {
+                $pdoAdapter = $ormConnection->getPdoAdapter();
+
+                $pdoDefaultConfig = $pdoAdapter->getConfigDefault();
+
+                if (null === $pdoDefaultConfig[ 'pdo' ]) {
+                    $eloquentConnectionConfig = $this->convertPdoAdapterToEloquentConfig($pdoAdapter);
+
+                    $this->eloquent->addConnection($eloquentConnectionConfig, $name);
+
+                } else {
+                    $eloquentConnectionConfig = [
+                        'driver'   => $pdoDefaultConfig[ 'driver' ],
+                        'database' => '',
+                    ];
+
+                    $this->eloquent->addConnection($eloquentConnectionConfig, $name);
+
+                    $conn = $this->eloquent->getConnection($name);
+
+                    $conn->setPdo(
+                        function () use ($pdoAdapter) {
+                            return $pdoAdapter->getPdoDefault();
+                        }
+                    );
+                    $conn->setReadPdo(
+                        function () use ($pdoAdapter) {
+                            return $pdoAdapter->getPdoRead();
+                        }
+                    );
+                }
+            }
+        }
+
         if (null !== $this->fnInit) {
             call_user_func_array($this->fnInit, [ $this->eloquent ]);
         }
@@ -212,5 +294,76 @@ class OrmBuilder implements OrmBuilderInterface
         );
 
         return $facade;
+    }
+
+
+    protected function convertPdoAdapterToEloquentConfig(PdoAdapter $pdoAdapter) : array
+    {
+        $configDefault = $pdoAdapter->getConfigDefault();
+        $configsRead = $pdoAdapter->getReadConfigs();
+        $configsWrite = $pdoAdapter->getWriteConfigs();
+
+        $eloquentConfig = $this->convertPdoAdapterConfigToEloquentConfig($configDefault);
+
+        if ([] !== $configsRead) {
+            foreach ( $configsRead as $c ) {
+                $eloquentConfig[ 'read' ][] = $this->convertPdoAdapterConfigToEloquentConfig($c);
+            }
+        }
+
+        if ([] !== $configsWrite) {
+            foreach ( $configsWrite as $c ) {
+                $eloquentConfig[ 'write' ][] = $this->convertPdoAdapterConfigToEloquentConfig($c);
+            }
+        }
+
+        return $eloquentConfig;
+    }
+
+    protected function convertPdoAdapterConfigToEloquentConfig(array $pdoAdapterConfig) : array
+    {
+        $pdo = $pdoAdapterConfig[ 'pdo' ];
+        $host = $pdoAdapterConfig[ 'host' ];
+        $port = $pdoAdapterConfig[ 'port' ];
+        $sock = $pdoAdapterConfig[ 'sock' ];
+
+        $isPdo = (null !== $pdo);
+        $isHost = (null !== $host);
+        $isSock = (null !== $sock);
+
+        if ($isPdo) {
+            throw new RuntimeException(
+                [
+                    'The `pdo-like` configs should not be converted using this function',
+                    $pdoAdapterConfig,
+                ]
+            );
+        }
+
+        $eloquentConfig = [];
+        $eloquentConfig[ 'driver' ] = $pdoAdapterConfig[ 'driver' ];
+        $eloquentConfig[ 'username' ] = $pdoAdapterConfig[ 'username' ];
+        $eloquentConfig[ 'password' ] = $pdoAdapterConfig[ 'password' ];
+        $eloquentConfig[ 'database' ] = $pdoAdapterConfig[ 'database' ];
+        $eloquentConfig[ 'charset' ] = $pdoAdapterConfig[ 'charset' ];
+        $eloquentConfig[ 'collation' ] = $pdoAdapterConfig[ 'collate' ];
+        $eloquentConfig[ 'options' ] = []
+            + $pdoAdapterConfig[ 'pdo_options_boot' ]
+            + $pdoAdapterConfig[ 'pdo_options_new' ];
+
+        if ($isHost) {
+            $eloquentConfig[ 'host' ] = $host;
+            $eloquentConfig[ 'port' ] = $port;
+
+        } elseif ($isSock) {
+            $eloquentConfig[ 'host' ] = $sock;
+
+        } else {
+            throw new RuntimeException(
+                [ 'Unable to convert config', $pdoAdapterConfig ]
+            );
+        }
+
+        return $eloquentConfig;
     }
 }
