@@ -3,7 +3,7 @@
 namespace Gzhegow\Orm\Core\Model\Traits;
 
 use Gzhegow\Lib\Lib;
-use Gzhegow\Orm\Core\Orm;
+use Gzhegow\Orm\Orm;
 use Illuminate\Database\Eloquent\Model;
 use Gzhegow\Orm\Exception\LogicException;
 use Gzhegow\Orm\Exception\RuntimeException;

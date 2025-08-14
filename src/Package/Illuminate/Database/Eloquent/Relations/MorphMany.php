@@ -2,7 +2,7 @@
 
 namespace Gzhegow\Orm\Package\Illuminate\Database\Eloquent\Relations;
 
-use Gzhegow\Orm\Core\Orm;
+use Gzhegow\Orm\Orm;
 use Gzhegow\Orm\Core\Relation\Traits\HasRelationNameTrait;
 use Gzhegow\Orm\Core\Relation\Interfaces\RelationInterface;
 use Gzhegow\Orm\Core\Persistence\EloquentPersistenceInterface;

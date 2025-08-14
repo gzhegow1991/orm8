@@ -2,7 +2,7 @@
 
 namespace Gzhegow\Orm\Package\Illuminate\Database\Capsule;
 
-use Gzhegow\Orm\Core\Orm;
+use Gzhegow\Orm\Orm;
 use Gzhegow\Orm\Exception\LogicException;
 use Gzhegow\Orm\Exception\RuntimeException;
 use Illuminate\Database\ConnectionInterface;

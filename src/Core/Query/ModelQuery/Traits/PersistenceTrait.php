@@ -2,7 +2,7 @@
 
 namespace Gzhegow\Orm\Core\Query\ModelQuery\Traits;
 
-use Gzhegow\Orm\Core\Orm;
+use Gzhegow\Orm\Orm;
 use Gzhegow\Orm\Core\Persistence\EloquentPersistenceInterface;
 use Gzhegow\Orm\Package\Illuminate\Database\Eloquent\EloquentModelQueryBuilder;
 

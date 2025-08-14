@@ -1,6 +1,6 @@
 <?php
 
-namespace Gzhegow\Orm\Core\Orm;
+namespace Gzhegow\Orm;
 
 use Gzhegow\Lib\Modules\Type\Ret;
 use Gzhegow\Lib\Connect\Pdo\PdoAdapter;

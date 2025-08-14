@@ -1,6 +1,6 @@
 <?php
 
-namespace Gzhegow\Orm\Core;
+namespace Gzhegow\Orm;
 
 use Gzhegow\Orm\Core\Persistence\EloquentPersistenceInterface;
 use Gzhegow\Orm\Package\Illuminate\Database\Capsule\EloquentInterface;

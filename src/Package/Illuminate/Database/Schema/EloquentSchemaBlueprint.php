@@ -4,7 +4,7 @@ namespace Gzhegow\Orm\Package\Illuminate\Database\Schema;
 
 use Gzhegow\Lib\Lib;
 use Illuminate\Database\Connection;
-use Gzhegow\Orm\Core\OrmFactoryInterface;
+use Gzhegow\Orm\OrmFactoryInterface;
 use Illuminate\Database\Schema\Blueprint as EloquentSchemaBlueprintBase;
 
 

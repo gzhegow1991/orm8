@@ -2,7 +2,7 @@
 
 namespace Gzhegow\Orm\Core\Model\Traits\Relation;
 
-use Gzhegow\Orm\Core\Orm;
+use Gzhegow\Orm\Orm;
 use Gzhegow\Orm\Exception\RuntimeException;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Eloquent\Concerns\HasRelationships;

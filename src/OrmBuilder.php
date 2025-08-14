@@ -1,8 +1,7 @@
 <?php
 
-namespace Gzhegow\Orm\Core;
+namespace Gzhegow\Orm;
 
-use Gzhegow\Orm\Core\Orm\OrmConnection;
 use Gzhegow\Lib\Connect\Pdo\PdoAdapter;
 use Gzhegow\Orm\Exception\RuntimeException;
 use Gzhegow\Lib\Exception\Runtime\ComposerException;

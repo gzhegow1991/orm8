@@ -223,7 +223,7 @@ trait AttributeTrait
 
         $this->setRelation($key, $value);
 
-        if ($relationship = $this->hasRelationshipOne($key)) {
+        if ($relationship = $this->hasRelationshipCanAssociate($key)) {
             if (null === $value) {
                 $relationship->dissociate();
 

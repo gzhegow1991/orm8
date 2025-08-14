@@ -1,6 +1,6 @@
 <?php
 
-namespace Gzhegow\Orm\Core;
+namespace Gzhegow\Orm;
 
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\Query\Grammars\Grammar;

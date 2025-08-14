@@ -2,7 +2,7 @@
 
 namespace Gzhegow\Orm\Core\Query\PdoQuery\Traits;
 
-use Gzhegow\Orm\Core\Orm;
+use Gzhegow\Orm\Orm;
 use Gzhegow\Orm\Core\Persistence\EloquentPersistenceInterface;
 use Gzhegow\Orm\Package\Illuminate\Database\EloquentPdoQueryBuilder;
 

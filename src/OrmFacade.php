@@ -1,6 +1,6 @@
 <?php
 
-namespace Gzhegow\Orm\Core;
+namespace Gzhegow\Orm;
 
 use Gzhegow\Orm\Exception\LogicException;
 use Gzhegow\Orm\Core\Persistence\EloquentPersistenceInterface;

@@ -76,7 +76,7 @@ $ffn = new class {
 // >>> ЗАПУСКАЕМ!
 
 // > сначала всегда фабрика
-$factory = new \Gzhegow\Orm\Core\OrmFactory();
+$factory = new \Gzhegow\Orm\OrmFactory();
 
 // > создаем сборщик
 $builder = $factory->newBuilder();
@@ -207,7 +207,7 @@ $builder
 $facade = $builder->make();
 
 // > устанавливаем фасад
-\Gzhegow\Orm\Core\Orm::setFacade($facade);
+\Gzhegow\Orm\Orm::setFacade($facade);
 
 
 $eloquent = $facade->getEloquent();
@@ -484,7 +484,7 @@ $fn = function () use (
     $foo4->persistForSaveRecursive();
 
 
-    \Gzhegow\Orm\Core\Orm::persistence()->flush();
+    \Gzhegow\Orm\Orm::persistence()->flush();
 
 
     $fooCollection = $modelClassDemoFoo::query()->get([ '*' ]);
@@ -565,7 +565,7 @@ $fn = function () use (
     $image1->persistForSaveRecursive();
     $image2->persistForSaveRecursive();
 
-    \Gzhegow\Orm\Core\Orm::persistence()->flush();
+    \Gzhegow\Orm\Orm::persistence()->flush();
 
 
     $imageQuery = $image1::query()
@@ -627,7 +627,7 @@ $fn = function () use (
         $tag2,
     ]);
 
-    \Gzhegow\Orm\Core\Orm::persistence()->flush();
+    \Gzhegow\Orm\Orm::persistence()->flush();
 
 
     $tagQuery = $modelClassDemoTag::query()
@@ -943,7 +943,7 @@ $fn = function () use (
     echo PHP_EOL;
 
 
-    $foo_hasMany_bars_hasMany_bazs = \Gzhegow\Orm\Core\Orm::fnCurryWith()
+    $foo_hasMany_bars_hasMany_bazs = \Gzhegow\Orm\Orm::fnCurryWith()
     ([ \Gzhegow\Orm\Demo\Model\DemoFooModel::class, '_demoBars' ])
     ([ \Gzhegow\Orm\Demo\Model\DemoBarModel::class, '_demoBazs' ])
     ();

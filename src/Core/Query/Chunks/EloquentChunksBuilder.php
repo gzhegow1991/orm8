@@ -2,7 +2,7 @@
 
 namespace Gzhegow\Orm\Core\Query\Chunks;
 
-use Gzhegow\Orm\Core\Orm;
+use Gzhegow\Orm\Orm;
 use Gzhegow\Lib\Modules\Type\Ret;
 use Gzhegow\Orm\Exception\LogicException;
 use Gzhegow\Orm\Exception\RuntimeException;
