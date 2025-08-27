@@ -1,7 +1,6 @@
 {
     "name": "gzhegow/orm8",
     "type": "library",
-    "version": "1.0.0",
     "license": "MIT",
 
     "authors": [
@@ -34,7 +33,7 @@
         "ext-json": "*",
         "ext-pdo": "*",
 
-        "gzhegow/lib": "~1.2.0",
+        "gzhegow/lib": "~1.0.0",
 
         "illuminate/database": "~9.0|~10.0|~12.0"
     },
@@ -46,5 +45,9 @@
         "optimize-autoloader": true,
 
         "sort-packages": false
+    },
+
+    "extra": {
+        "version": "1.0.0"
     }
 }
