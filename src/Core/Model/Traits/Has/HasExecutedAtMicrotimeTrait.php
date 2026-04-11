@@ -17,34 +17,36 @@ trait HasExecutedAtMicrotimeTrait
     {
         $executedAtMicrotimeString = $executedAtMicrotime;
 
-        if (null !== $executedAtMicrotimeString) {
+        if ( null !== $executedAtMicrotimeString ) {
             $theDate = Lib::date();
+            $theType = Lib::type();
 
-            $executedAtMicrotimeString = $theDate->type_idate_microtime($executedAtMicrotime)->orThrow();
+            $executedAtMicrotimeString = $theType->idate_microtime($executedAtMicrotime)->orThrow();
 
             $executedAtMicrotimeString = $theDate->format_usec($executedAtMicrotimeString);
         }
 
-        $this->attributes[ 'executed_at_microtime' ] = $executedAtMicrotimeString;
+        $this->attributes['executed_at_microtime'] = $executedAtMicrotimeString;
     }
 
     public function setupExecutedAtMicrotime($executedAtMicrotime = null) : string
     {
-        $current = $this->attributes[ 'executed_at_microtime' ] ?? null;
+        $current = $this->attributes['executed_at_microtime'] ?? null;
 
-        if (null === $current) {
+        if ( null === $current ) {
             $theDate = Lib::date();
+            $theType = Lib::type();
 
-            if (null === $executedAtMicrotime) {
+            if ( null === $executedAtMicrotime ) {
                 $executedAtMicrotimeString = $theDate->idate_now();
 
             } else {
-                $executedAtMicrotimeString = $theDate->type_idate_microtime($executedAtMicrotime)->orThrow();
+                $executedAtMicrotimeString = $theType->idate_microtime($executedAtMicrotime)->orThrow();
             }
 
             $executedAtMicrotimeString = $theDate->format_usec($executedAtMicrotimeString);
 
-            $this->attributes[ 'executed_at_microtime' ] = $executedAtMicrotimeString;
+            $this->attributes['executed_at_microtime'] = $executedAtMicrotimeString;
         }
 
         return $this->executed_at_microtime;
