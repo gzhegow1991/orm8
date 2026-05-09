@@ -60,7 +60,6 @@ abstract class EloquentModel extends AbstractEloquentModel
 
     /**
      * > PHPStorm forget that the \JsonSerializable thanks to COMMUNITY!!11 requires `mixed` return type
-     * @noinspection PhpMixedReturnTypeCanBeReducedInspection
      */
     public function jsonSerialize() : mixed
     {
